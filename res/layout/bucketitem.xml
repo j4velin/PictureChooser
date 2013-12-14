@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <include
+        android:id="@+id/icon"
+        layout="@layout/imageitem" />
+
+    <TextView
+        android:id="@+id/text"
+        android:background="#66666666"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="TextView" />
+
+</RelativeLayout>
