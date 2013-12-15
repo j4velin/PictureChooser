@@ -7,10 +7,11 @@
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="18" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application android:allowBackup="true" >
-        <activity android:name="de.j4velin.picturechooser.Main" android:exported="true" >
+        <activity android:name="de.j4velin.picturechooser.Main" >
         </activity>
     </application>
 
