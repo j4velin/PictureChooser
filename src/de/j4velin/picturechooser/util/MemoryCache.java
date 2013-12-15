@@ -1,3 +1,6 @@
+/*
+ * from http://www.androidhive.info/2012/07/android-loading-image-from-url-http/
+ */
 package de.j4velin.picturechooser.util;
 
 import java.lang.ref.SoftReference;
