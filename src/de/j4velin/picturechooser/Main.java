@@ -16,13 +16,13 @@
 package de.j4velin.picturechooser;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 
-public class Main extends Activity {
+public class Main extends FragmentActivity {
 	@SuppressLint("InlinedApi")
 	@Override
 	protected void onCreate(final Bundle b) {
@@ -38,7 +38,7 @@ public class Main extends Activity {
 
 		// Create new fragment and transaction
 		Fragment newFragment = new BucketsFragment();
-		FragmentTransaction transaction = getFragmentManager().beginTransaction();
+		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
 		// Replace whatever is in the fragment_container view with this
 		// fragment,
@@ -54,7 +54,7 @@ public class Main extends Activity {
 		b.putInt("bucket", bucketId);
 		Fragment f = new ImagesFragment();
 		f.setArguments(b);
-		getFragmentManager().beginTransaction().replace(android.R.id.content, f).addToBackStack(null).commit();
+		getSupportFragmentManager().beginTransaction().replace(android.R.id.content, f).addToBackStack(null).commit();
 	}
 
 	void imageSelected(final String imgPath) {
