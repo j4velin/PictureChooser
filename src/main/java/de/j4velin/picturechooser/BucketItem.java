@@ -18,8 +18,15 @@ package de.j4velin.picturechooser;
 public class BucketItem extends GridItem {
 
 	final int id;
-	int images;
+	int images = 1;
 
+    /**
+     * Creates a new BucketItem
+     *
+     * @param n the name of the bucket
+     * @param p the absolute path to the bucket
+     * @param i the bucket ID
+     */
 	public BucketItem(String n, String p, int i) {
 		super(n, p);
 		id = i;
