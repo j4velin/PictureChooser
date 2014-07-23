@@ -9,6 +9,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import de.j4velin.picturechooser.BuildConfig;
 import de.j4velin.picturechooser.Logger;
 import de.j4velin.picturechooser.R;
 
@@ -67,7 +68,7 @@ public class ImageLoader {
 		try {
 			return BitmapFactory.decodeFile(pfad, options);
 		} catch (OutOfMemoryError oom) {
-			if (Logger.LOG) {
+			if (BuildConfig.DEBUG) {
 				Logger.log("OOM when loading file " + pfad);
 				Logger.log(oom);
 			}

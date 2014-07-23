@@ -30,12 +30,6 @@ public class Main extends FragmentActivity {
 
 		setResult(RESULT_CANCELED);
 
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-			setTheme(android.R.style.Theme_Holo_NoActionBar_TranslucentDecor);
-		} else {
-			setTheme(android.R.style.Theme_Holo_NoActionBar);
-		}
-
 		// Create new fragment and transaction
 		Fragment newFragment = new BucketsFragment();
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
