@@ -68,7 +68,7 @@ public class GalleryAdapter extends BaseAdapter {
                 holder = (ViewHolder) convertView.getTag();
             }
             BucketItem bi = (BucketItem) items.get(position);
-            holder.text.setText(bi.name + " - " + bi.images + " images");
+            holder.text.setText(bi.images > 1 ? bi.name + " - " + bi.images + " images" : bi.name);
             imageLoader.DisplayImage(bi.path, holder.icon);
             return convertView;
         } else { // show images in a bucket
