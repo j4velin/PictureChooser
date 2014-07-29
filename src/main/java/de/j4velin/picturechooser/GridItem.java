@@ -16,8 +16,8 @@
 package de.j4velin.picturechooser;
 
 public class GridItem {
-	final String name;
-	final String path;
+    final String name;
+    final String path;
 
     /**
      * Creates a new GridItem
@@ -25,8 +25,8 @@ public class GridItem {
      * @param n the name of the item
      * @param p the path to the item
      */
-	public GridItem(final String n, final String p) {
-		name = n;
-		path = p;
-	}
+    public GridItem(final String n, final String p) {
+        name = n;
+        path = p;
+    }
 }

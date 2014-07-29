@@ -31,36 +31,38 @@ import android.widget.GridView;
 
 public class ImagesFragment extends Fragment {
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.gallery, null);
+    @Override
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.gallery, null);
 
-		Cursor cur = getActivity().getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-				new String[] { MediaStore.Images.Media.DATA, MediaStore.Images.Media.DISPLAY_NAME },
-				MediaStore.Images.Media.BUCKET_ID + " = ?", new String[] { String.valueOf(getArguments().getInt("bucket")) },
-				null);
+        Cursor cur = getActivity().getContentResolver()
+                .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        new String[]{MediaStore.Images.Media.DATA,
+                                MediaStore.Images.Media.DISPLAY_NAME},
+                        MediaStore.Images.Media.BUCKET_ID + " = ?",
+                        new String[]{String.valueOf(getArguments().getInt("bucket"))}, null);
 
-		final List<GridItem> images = new ArrayList<GridItem>(cur.getCount());
+        final List<GridItem> images = new ArrayList<GridItem>(cur.getCount());
 
-		if (cur != null) {
-			if (cur.moveToFirst()) {
-				while (!cur.isAfterLast()) {
-					images.add(new GridItem(cur.getString(1), cur.getString(0)));
-					cur.moveToNext();
-				}
-			}
-			cur.close();
-		}
+        if (cur != null) {
+            if (cur.moveToFirst()) {
+                while (!cur.isAfterLast()) {
+                    images.add(new GridItem(cur.getString(1), cur.getString(0)));
+                    cur.moveToNext();
+                }
+            }
+            cur.close();
+        }
 
-		GridView grid = (GridView) v.findViewById(R.id.grid);
-		grid.setAdapter(new GalleryAdapter(getActivity(), images));
-		grid.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				((Main) getActivity()).imageSelected(images.get(position).path);
-			}
-		});
-		return v;
-	}
+        GridView grid = (GridView) v.findViewById(R.id.grid);
+        grid.setAdapter(new GalleryAdapter(getActivity(), images));
+        grid.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ((Main) getActivity()).imageSelected(images.get(position).path);
+            }
+        });
+        return v;
+    }
 
 }

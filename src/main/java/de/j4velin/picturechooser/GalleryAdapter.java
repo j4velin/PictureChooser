@@ -35,7 +35,7 @@ public class GalleryAdapter extends BaseAdapter {
 
     public GalleryAdapter(final Context context, final List<GridItem> buckets) {
         this.items = buckets;
-        this.imageLoader = new ImageLoader(context);
+        this.imageLoader = new ImageLoader();
         this.mInflater = LayoutInflater.from(context);
     }
 
@@ -55,7 +55,7 @@ public class GalleryAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, final ViewGroup parent) {
         if (items.get(0) instanceof BucketItem) { // show buckets
             ViewHolder holder;
             if (convertView == null) {
@@ -84,8 +84,8 @@ public class GalleryAdapter extends BaseAdapter {
     }
 
     private static class ViewHolder {
-        ImageView icon;
-        TextView text;
+        private ImageView icon;
+        private TextView text;
     }
 
 }

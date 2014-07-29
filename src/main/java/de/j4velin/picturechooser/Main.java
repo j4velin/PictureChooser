@@ -23,38 +23,40 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
 public class Main extends FragmentActivity {
-	@SuppressLint("InlinedApi")
-	@Override
-	protected void onCreate(final Bundle b) {
-		super.onCreate(b);
 
-		setResult(RESULT_CANCELED);
+    @SuppressLint("InlinedApi")
+    @Override
+    protected void onCreate(final Bundle b) {
+        super.onCreate(b);
 
-		// Create new fragment and transaction
-		Fragment newFragment = new BucketsFragment();
-		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        setResult(RESULT_CANCELED);
 
-		// Replace whatever is in the fragment_container view with this
-		// fragment,
-		// and add the transaction to the back stack
-		transaction.replace(android.R.id.content, newFragment);
+        // Create new fragment and transaction
+        Fragment newFragment = new BucketsFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-		// Commit the transaction
-		transaction.commit();
-	}
+        // Replace whatever is in the fragment_container view with this
+        // fragment,
+        // and add the transaction to the back stack
+        transaction.replace(android.R.id.content, newFragment);
 
-	void showBucket(final int bucketId) {
-		Bundle b = new Bundle();
-		b.putInt("bucket", bucketId);
-		Fragment f = new ImagesFragment();
-		f.setArguments(b);
-		getSupportFragmentManager().beginTransaction().replace(android.R.id.content, f).addToBackStack(null).commit();
-	}
+        // Commit the transaction
+        transaction.commit();
+    }
 
-	void imageSelected(final String imgPath) {
-		Intent result = new Intent();
-		result.putExtra("imgPath", imgPath);
-		setResult(RESULT_OK, result);
-		finish();
-	}
+    void showBucket(final int bucketId) {
+        Bundle b = new Bundle();
+        b.putInt("bucket", bucketId);
+        Fragment f = new ImagesFragment();
+        f.setArguments(b);
+        getSupportFragmentManager().beginTransaction().replace(android.R.id.content, f)
+                .addToBackStack(null).commit();
+    }
+
+    void imageSelected(final String imgPath) {
+        Intent result = new Intent();
+        result.putExtra("imgPath", imgPath);
+        setResult(RESULT_OK, result);
+        finish();
+    }
 }
