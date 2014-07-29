@@ -22,7 +22,9 @@ import android.widget.ImageView;
 
 public class ImageLoader {
 
-	MemoryCache memoryCache = new MemoryCache();
+    private final static int THUMBNAIL_SIZE_PX = 300;
+
+	private static MemoryCache memoryCache = new MemoryCache();
 	private Map<ImageView, String> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
 	private ExecutorService executorService;
 
@@ -30,9 +32,9 @@ public class ImageLoader {
 		executorService = Executors.newCachedThreadPool();
 	}
 
-	final int stub_id = R.drawable.ic_menu_gallery;
+	private static final int stub_id = R.drawable.ic_menu_gallery;
 
-	public void DisplayImage(String pfad, ImageView imageView) {
+	public void DisplayImage(final String pfad, final ImageView imageView) {
 		imageViews.put(imageView, pfad);
 		Bitmap bitmap = memoryCache.get(pfad);
 		if (bitmap != null)
@@ -43,27 +45,22 @@ public class ImageLoader {
 		}
 	}
 
-	private void queuePhoto(String pfad, ImageView imageView) {
+	private void queuePhoto(final String pfad, final ImageView imageView) {
 		executorService.submit(new PhotosLoader(new PhotoToLoad(pfad, imageView)));
 	}
 
 	// decodes image and scales it to reduce memory consumption
-	Bitmap decode(String pfad) {
+	static Bitmap decode(final String pfad, int width, int height) {
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
+        options.inSampleSize = 1;
 		BitmapFactory.decodeFile(pfad, options);
-		int width = options.outWidth;
-		if (width < 300) {
-			options.inSampleSize = 1;
-		} else if (width < 600) {
-			options.inSampleSize = 2;
-		} else if (width < 1200) {
-			options.inSampleSize = 4;
-		} else if (width < 2400) {
-			options.inSampleSize = 8;
-		} else {
-			options.inSampleSize = (int) java.lang.Math.floor(width / (float) 300);
-		}
+		int imgWidth = options.outWidth;
+        int imgHeight = options.outHeight;
+
+        while (imgWidth > width * options.inSampleSize && imgHeight > height * options.inSampleSize)
+            options.inSampleSize *= 2;
+
 		options.inJustDecodeBounds = false;
 		try {
 			return BitmapFactory.decodeFile(pfad, options);
@@ -76,21 +73,17 @@ public class ImageLoader {
 		}
 	}
 
-	boolean imageViewReused(PhotoToLoad photoToLoad) {
+	private boolean imageViewReused(final PhotoToLoad photoToLoad) {
 		String tag = imageViews.get(photoToLoad.imageView);
 		if (tag == null || !tag.equals(photoToLoad.pfad))
 			return true;
 		return false;
 	}
 
-	public void clearCache() {
-		memoryCache.clear();
-	}
+	private class PhotosLoader implements Runnable {
+		private final PhotoToLoad photoToLoad;
 
-	class PhotosLoader implements Runnable {
-		PhotoToLoad photoToLoad;
-
-		PhotosLoader(PhotoToLoad photoToLoad) {
+		PhotosLoader(final PhotoToLoad photoToLoad) {
 			this.photoToLoad = photoToLoad;
 		}
 
@@ -98,7 +91,7 @@ public class ImageLoader {
 		public void run() {
 			if (imageViewReused(photoToLoad))
 				return;
-			Bitmap bmp = decode(photoToLoad.pfad);
+			Bitmap bmp = decode(photoToLoad.pfad, THUMBNAIL_SIZE_PX, THUMBNAIL_SIZE_PX);
 			memoryCache.put(photoToLoad.pfad, bmp);
 			if (imageViewReused(photoToLoad))
 				return;
@@ -109,21 +102,21 @@ public class ImageLoader {
 	}
 
 	private class PhotoToLoad {
-		String pfad;
-		ImageView imageView;
+		private final String pfad;
+		private final ImageView imageView;
 
-		PhotoToLoad(String u, ImageView i) {
+		PhotoToLoad(final String u, final ImageView i) {
 			pfad = u;
 			imageView = i;
 		}
 	}
 
 	// Used to display bitmap in the UI thread
-	class BitmapDisplayer implements Runnable {
-		Bitmap bitmap;
-		PhotoToLoad photoToLoad;
+	private class BitmapDisplayer implements Runnable {
+		private final Bitmap bitmap;
+		private final PhotoToLoad photoToLoad;
 
-		BitmapDisplayer(Bitmap b, PhotoToLoad p) {
+		BitmapDisplayer(final Bitmap b, final PhotoToLoad p) {
 			bitmap = b;
 			photoToLoad = p;
 		}
