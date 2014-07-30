@@ -2,6 +2,7 @@
 <resources>
     <string name="images">%d images</string>
     <string name="error">Error</string>
+    <string name="save">Save</string>
     <string name="saving">Saving...</string>
     <string name="external_not_available">External storage not available</string>
 
