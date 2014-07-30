@@ -35,6 +35,7 @@ public class CropView extends View {
     private final RectF hightlightArea = new RectF(); // the highlighted area
     private final Paint darkAreaPaint = new Paint();
     private final Paint hightlightPaint = new Paint();
+    private final Paint textPaint = new Paint();
     private float scale; // the scale factor: original image size / imageview size
 
     public CropView(final Context context, final AttributeSet attrs) {
@@ -43,6 +44,8 @@ public class CropView extends View {
         hightlightPaint.setStyle(Paint.Style.STROKE);
         hightlightPaint.setColor(Color.WHITE);
         hightlightPaint.setStrokeWidth(3f);
+        textPaint.setColor(Color.WHITE);
+        textPaint.setTextSize(25);
     }
 
     @Override
@@ -65,6 +68,10 @@ public class CropView extends View {
 
         // highlighted area
         canvas.drawRect(hightlightArea, hightlightPaint);
+
+        canvas.drawText((int) (hightlightArea.width() * scale) + " x " +
+                        (int) (hightlightArea.height() * scale) + " px", hightlightArea.left + 10,
+                hightlightArea.bottom - 10, textPaint);
     }
 
     @Override

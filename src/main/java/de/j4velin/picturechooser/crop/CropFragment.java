@@ -71,9 +71,6 @@ public class CropFragment extends Fragment {
                 .decode(getArguments().getString("imgPath"), availableWidth, availableHeight,
                         imgDetails));
 
-        Logger.log("widht: " + availableWidth);
-        Logger.log("height: " + availableHeight);
-
         float imageViewWidth = imgDetails[0];
         float imageViewHeight = imgDetails[1];
 
