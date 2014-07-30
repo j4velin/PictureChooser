@@ -48,15 +48,27 @@ public class ImageLoader {
         executorService.submit(new PhotosLoader(new PhotoToLoad(pfad, imageView)));
     }
 
-    // decodes image and scales it to reduce memory consumption
     private static Bitmap decode(final String pfad) {
+        return decode(pfad, THUMBNAIL_SIZE_PX, THUMBNAIL_SIZE_PX, null);
+    }
+
+    // decodes image and scales it to reduce memory consumption
+    public static Bitmap decode(final String pfad, int width, int height, final float[] imgDetails) {
         Options options = new Options();
         options.inJustDecodeBounds = true;
         options.inSampleSize = 1;
         BitmapFactory.decodeFile(pfad, options);
         int imgWidth = options.outWidth;
+        int imgHeight = options.outHeight;
 
-        while (imgWidth > THUMBNAIL_SIZE_PX * options.inSampleSize) options.inSampleSize *= 2;
+        while (imgWidth > width * options.inSampleSize && imgHeight > height * options.inSampleSize)
+            options.inSampleSize *= 2;
+
+        if (imgDetails != null) {
+            imgDetails[0] = imgWidth;
+            imgDetails[1] = imgHeight;
+            imgDetails[2] = options.inSampleSize;
+        }
 
         options.inJustDecodeBounds = false;
         try {

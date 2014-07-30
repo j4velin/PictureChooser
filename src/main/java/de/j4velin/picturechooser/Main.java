@@ -22,6 +22,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 
+import de.j4velin.picturechooser.crop.CropFragment;
+
 public class Main extends FragmentActivity {
 
     @SuppressLint("InlinedApi")
@@ -54,6 +56,23 @@ public class Main extends FragmentActivity {
     }
 
     void imageSelected(final String imgPath) {
+        if (getIntent().getBooleanExtra("crop", false)) {
+            Bundle b = new Bundle();
+            b.putString("imgPath", imgPath);
+            Fragment f = new CropFragment();
+            f.setArguments(b);
+            getSupportFragmentManager().beginTransaction().replace(android.R.id.content, f)
+                    .addToBackStack(null).commit();
+        } else {
+            returnResult(imgPath);
+        }
+    }
+
+    public void cropped(final String imgPath) {
+        returnResult(imgPath);
+    }
+
+    private void returnResult(final String imgPath) {
         Intent result = new Intent();
         result.putExtra("imgPath", imgPath);
         setResult(RESULT_OK, result);

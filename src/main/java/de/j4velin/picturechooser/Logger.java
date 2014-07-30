@@ -54,7 +54,7 @@ public class Logger {
 
     @SuppressWarnings("deprecation")
     public static void log(final String msg) {
-        if (!BuildConfig.DEBUG) return;
+//        if (!BuildConfig.DEBUG) return;
         android.util.Log.d(APP, msg);
         try {
             if (fw == null) {
