@@ -17,6 +17,7 @@ package de.j4velin.picturechooser.crop;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -59,7 +60,13 @@ class SaveTask extends AsyncTask<String, Void, String> {
         super.onPostExecute(error);
         pg.dismiss();
         if (error != null) {
-            new AlertDialog.Builder(main).setMessage(error).setTitle(R.string.error).create().show();
+            new AlertDialog.Builder(main).setMessage(error).setTitle(R.string.error)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int i) {
+                            dialog.dismiss();
+                        }
+                    }).create().show();
         }
     }
 
@@ -87,10 +94,16 @@ class SaveTask extends AsyncTask<String, Void, String> {
         }
         FileOutputStream out = null;
         try {
-            // might be an issue if an image is more than 6000px --> ignore that for now
-            final Bitmap original = ImageLoader.decode(source, 3000, 3000, null);
+            float[] imgDetails = new float[3];
+            final Bitmap original = ImageLoader.decode(source, 3000, 3000, imgDetails);
             out = new FileOutputStream(destination);
-            Bitmap.createBitmap(original, crop.left, crop.top, crop.right, crop.bottom, null, true)
+
+            android.util.Log.d("GalleryLib", crop.toString());
+            android.util.Log.d("GalleryLib", original.getWidth() + " x " + original.getHeight());
+
+            Bitmap.createBitmap(original, (int) (crop.left / imgDetails[2]),
+                    (int) (crop.top / imgDetails[2]), (int) (crop.right / imgDetails[2]),
+                    (int) (crop.bottom / imgDetails[2]), null, true)
                     .compress(Bitmap.CompressFormat.JPEG, 100, out);
             main.cropped(destination);
         } catch (Throwable e) {
