@@ -15,7 +15,7 @@
  */
 package de.j4velin.picturechooser;
 
-public class BucketItem extends GridItem {
+class BucketItem extends GridItem {
 
     final int id;
     int images = 1;

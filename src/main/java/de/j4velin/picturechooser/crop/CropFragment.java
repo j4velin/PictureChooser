@@ -16,12 +16,9 @@
 package de.j4velin.picturechooser.crop;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -30,15 +27,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileOutputStream;
-
-import de.j4velin.picturechooser.Logger;
 import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
-import de.j4velin.picturechooser.util.ExternalDirWrapper;
 import de.j4velin.picturechooser.util.ImageLoader;
 
 public class CropFragment extends Fragment {
@@ -94,94 +85,10 @@ public class CropFragment extends Fragment {
         v.findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
-                save(calculateSize(cv.getCropArea(), imagePosition, cv.getScale()));
+                new SaveTask((Main) getActivity(), cv, imagePosition)
+                        .execute(getArguments().getString("imgPath"));
             }
         });
         return v;
-    }
-
-    /**
-     * Calculates the resulting size of the cropped image
-     *
-     * @param cropArea the selected cropping area
-     * @param image the area of the imageView
-     * @param scale the scale between original image size and imageview size
-     * @return the size of the cropped image
-     */
-    private static Rect calculateSize(final RectF cropArea, final RectF image, float scale) {
-        return new Rect((int) ((cropArea.left - image.left) * scale),
-                (int) ((cropArea.top - image.top) * scale), (int) (cropArea.width() * scale),
-                (int) (cropArea.height() * scale));
-    }
-
-    /**
-     * Saves the cropped image.
-     *
-     * @param crop the calculated size of the cropped image
-     */
-    private void save(final Rect crop) {
-        final String destination = createNewCroppingFile();
-        if (destination == null) return;
-        FileOutputStream out = null;
-        try {
-            // might be an issue if an image is more than 6000px --> ignore that for now
-            final Bitmap original =
-                    ImageLoader.decode(getArguments().getString("imgPath"), 3000, 3000, null);
-            out = new FileOutputStream(destination);
-            Bitmap.createBitmap(original, crop.left, crop.top, crop.right, crop.bottom, null, true)
-                    .compress(Bitmap.CompressFormat.JPEG, 100, out);
-            ((Main) getActivity()).cropped(destination);
-        } catch (Throwable e) {
-            Logger.log(e);
-            Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        } finally {
-            try {
-                out.close();
-            } catch (Throwable ignore) {
-            }
-        }
-    }
-
-    /**
-     * Creates the file which will contain the cropped image
-     *
-     * @return the absolute path to the created file or NULL if there was an error
-     */
-    private String createNewCroppingFile() {
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            File tmpFile;
-            int test = 0;
-            String path;
-            try {
-                path = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO ?
-                        ExternalDirWrapper.getExternalFilesDir(getActivity()).getAbsolutePath() +
-                                "/image_" :
-                        Environment.getExternalStorageDirectory().getAbsolutePath() +
-                                "/Android/data/" + getActivity().getPackageName() + "/files/image_";
-            } catch (NullPointerException e) { // should not happen when media
-                // is mounted, but seems to
-                // happen anyway
-                return null;
-            }
-            do {
-                test++;
-                tmpFile = new File(path + test + ".jpg");
-            } while (tmpFile.length() > 0);
-            try {
-                File parent = tmpFile.getParentFile();
-                if (parent == null || !parent.exists()) {
-                    tmpFile.mkdirs();
-                }
-                tmpFile.createNewFile();
-                return tmpFile.getAbsolutePath();
-            } catch (Exception e) {
-                Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        } else {
-            Toast.makeText(getActivity(), "Error: External storage not available",
-                    Toast.LENGTH_LONG).show();
-
-        }
-        return null;
     }
 }

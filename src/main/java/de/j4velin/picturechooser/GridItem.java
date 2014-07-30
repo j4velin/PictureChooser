@@ -15,7 +15,7 @@
  */
 package de.j4velin.picturechooser;
 
-public class GridItem {
+class GridItem {
     final String name;
     final String path;
 

@@ -27,8 +27,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class GalleryAdapter extends BaseAdapter {
+class GalleryAdapter extends BaseAdapter {
 
+    private final Context context;
     private final List<GridItem> items;
     private final ImageLoader imageLoader;
     private final LayoutInflater mInflater;
@@ -36,6 +37,7 @@ public class GalleryAdapter extends BaseAdapter {
     public GalleryAdapter(final Context context, final List<GridItem> buckets) {
         this.items = buckets;
         this.imageLoader = new ImageLoader();
+        this.context = context;
         this.mInflater = LayoutInflater.from(context);
     }
 
@@ -68,7 +70,9 @@ public class GalleryAdapter extends BaseAdapter {
                 holder = (ViewHolder) convertView.getTag();
             }
             BucketItem bi = (BucketItem) items.get(position);
-            holder.text.setText(bi.images > 1 ? bi.name + " - " + bi.images + " images" : bi.name);
+            holder.text.setText(bi.images > 1 ?
+                            bi.name + " - " + context.getString(R.string.images, bi.images) :
+                            bi.name);
             imageLoader.DisplayImage(bi.path, holder.icon);
             return convertView;
         } else { // show images in a bucket

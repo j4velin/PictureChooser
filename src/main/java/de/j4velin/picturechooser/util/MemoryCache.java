@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import android.graphics.Bitmap;
 
-public class MemoryCache {
+class MemoryCache {
     private static final HashMap<String, SoftReference<Bitmap>> cache =
             new HashMap<String, SoftReference<Bitmap>>();
 

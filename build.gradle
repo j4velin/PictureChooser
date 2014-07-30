@@ -1,4 +1,4 @@
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 19
@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "de.j4velin.picturechooser"
         minSdkVersion 4
-        targetSdkVersion 18
+        targetSdkVersion 19
     }
 
     buildTypes {

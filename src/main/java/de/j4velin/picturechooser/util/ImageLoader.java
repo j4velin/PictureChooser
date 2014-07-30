@@ -23,10 +23,10 @@ public class ImageLoader {
 
     private final static int THUMBNAIL_SIZE_PX = 300;
 
-    private static MemoryCache memoryCache = new MemoryCache();
-    private Map<ImageView, String> imageViews =
+    private static final MemoryCache memoryCache = new MemoryCache();
+    private final Map<ImageView, String> imageViews =
             Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
-    private ExecutorService executorService;
+    private final ExecutorService executorService;
 
     public ImageLoader() {
         executorService = Executors.newCachedThreadPool();

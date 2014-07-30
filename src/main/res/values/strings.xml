@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="images">%d images</string>
+    <string name="error">Error</string>
+    <string name="saving">Saving...</string>
+    <string name="external_not_available">External storage not available</string>
+
+</resources>
