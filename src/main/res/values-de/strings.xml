@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="images">%d Bilder</string>
+    <string name="error">Fehler</string>
+    <string name="save">Speichern</string>
+    <string name="saving">Speichere...</string>
+    <string name="external_not_available">Externer Speicher nicht verfügbar</string>
+    <string name="no_images">Keine Bilder gefunden</string>
+</resources>
