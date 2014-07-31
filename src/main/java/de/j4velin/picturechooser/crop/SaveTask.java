@@ -90,23 +90,29 @@ class SaveTask extends AsyncTask<String, Void, String> {
         try {
             destination = createNewCroppingFile();
         } catch (IOException e) {
+            e.printStackTrace();
             return e.getClass().getSimpleName() + ": " + e.getMessage();
         }
         FileOutputStream out = null;
+        float[] imgDetails = new float[3];
         try {
-            float[] imgDetails = new float[3];
-            final Bitmap original = ImageLoader.decode(source, 3000, 3000, imgDetails);
+            int size = 3500;
+            Bitmap original;
+            do {
+                size -= 500;
+                original = ImageLoader.decode(source, size, size, imgDetails);
+            } while (size > 500 && original == null);
+            if (original == null) {
+                return "Could not load image";
+            }
             out = new FileOutputStream(destination);
-
-            android.util.Log.d("GalleryLib", crop.toString());
-            android.util.Log.d("GalleryLib", original.getWidth() + " x " + original.getHeight());
-
             Bitmap.createBitmap(original, (int) (crop.left / imgDetails[2]),
                     (int) (crop.top / imgDetails[2]), (int) (crop.right / imgDetails[2]),
                     (int) (crop.bottom / imgDetails[2]), null, true)
                     .compress(Bitmap.CompressFormat.JPEG, 100, out);
             main.cropped(destination);
         } catch (Throwable e) {
+            e.printStackTrace();
             return e.getClass().getSimpleName() + ": " + e.getMessage();
         } finally {
             try {

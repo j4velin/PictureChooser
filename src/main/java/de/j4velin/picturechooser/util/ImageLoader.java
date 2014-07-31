@@ -74,6 +74,7 @@ public class ImageLoader {
         try {
             return BitmapFactory.decodeFile(pfad, options);
         } catch (OutOfMemoryError oom) {
+            oom.printStackTrace();
             if (BuildConfig.DEBUG) {
                 Logger.log("OOM when loading file " + pfad);
                 Logger.log(oom);
