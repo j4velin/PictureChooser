@@ -7,8 +7,12 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.os.Build;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -58,8 +62,8 @@ public class ImageLoader {
         options.inJustDecodeBounds = true;
         options.inSampleSize = 1;
         BitmapFactory.decodeFile(pfad, options);
-        int imgWidth = options.outWidth;
-        int imgHeight = options.outHeight;
+        final int imgWidth = options.outWidth;
+        final int imgHeight = options.outHeight;
 
         while (imgWidth > width * options.inSampleSize && imgHeight > height * options.inSampleSize)
             options.inSampleSize *= 2;
@@ -72,7 +76,26 @@ public class ImageLoader {
 
         options.inJustDecodeBounds = false;
         try {
-            return BitmapFactory.decodeFile(pfad, options);
+            int rotation = Build.VERSION.SDK_INT >= 5 ? API5Wrapper.getOrientation(pfad) : 0;
+            if (rotation > 0) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(rotation);
+                if (rotation != 180 && imgDetails != null) {
+                    imgDetails[0] = imgHeight;
+                    imgDetails[1] = imgWidth;
+                }
+                if (BuildConfig.DEBUG) Logger.log("rotate image by " + rotation);
+                Bitmap image = BitmapFactory.decodeFile(pfad, options);
+                try {
+                    return Bitmap.createBitmap(image, 0, 0, imgWidth / options.inSampleSize,
+                            imgHeight / options.inSampleSize, matrix, true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            } else {
+                return BitmapFactory.decodeFile(pfad, options);
+            }
         } catch (OutOfMemoryError oom) {
             oom.printStackTrace();
             if (BuildConfig.DEBUG) {
@@ -136,5 +159,4 @@ public class ImageLoader {
             }
         }
     }
-
 }

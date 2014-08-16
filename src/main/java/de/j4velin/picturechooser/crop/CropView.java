@@ -37,6 +37,8 @@ public class CropView extends View {
     private final Paint hightlightPaint = new Paint();
     private final Paint textPaint = new Paint();
     private float scale; // the scale factor: original image size / imageview size
+    private float aspect; // aspect ratio
+    private String aspectStr; // ratio in human readable form (4:3, 16:9 etc.)
 
     public CropView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
@@ -72,18 +74,58 @@ public class CropView extends View {
         canvas.drawText((int) (hightlightArea.width() * scale) + " x " +
                         (int) (hightlightArea.height() * scale) + " px", hightlightArea.left + 10,
                 hightlightArea.bottom - 10, textPaint);
+
+        if (aspect != 0)
+            canvas.drawText(aspectStr, hightlightArea.right - textPaint.measureText(aspectStr) - 10,
+                    hightlightArea.bottom - 10, textPaint);
     }
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            float old = hightlightArea.width();
+
             if (event.getX() > hightlightArea.width() / 2 + hightlightArea.left)
                 hightlightArea.right = Math.min(event.getX(), imageArea.right);
             else hightlightArea.left = Math.max(event.getX(), imageArea.left);
 
-            if (event.getY() > hightlightArea.height() / 2 + hightlightArea.top)
-                hightlightArea.bottom = Math.min(event.getY(), imageArea.bottom);
-            else hightlightArea.top = Math.max(event.getY(), imageArea.top);
+            if (aspect == 0) {
+                if (event.getY() > hightlightArea.height() / 2 + hightlightArea.top)
+                    hightlightArea.bottom = Math.min(event.getY(), imageArea.bottom);
+                else hightlightArea.top = Math.max(event.getY(), imageArea.top);
+            } else {
+                float factor = hightlightArea.width() / old - 1;
+                float space = hightlightArea.height() * factor;
+                if (space > imageArea.height() - hightlightArea.height()) {
+                    hightlightArea.top = imageArea.top;
+                    hightlightArea.bottom = imageArea.bottom;
+                    if (event.getX() > hightlightArea.width() / 2 + hightlightArea.left)
+                        hightlightArea.right =
+                                hightlightArea.left + hightlightArea.height() * aspect;
+                    else hightlightArea.left =
+                            hightlightArea.right - hightlightArea.height() * aspect;
+                } else {
+                    if (event.getY() > hightlightArea.height() / 2 + hightlightArea.top) {
+                        float possible = imageArea.bottom - hightlightArea.bottom;
+                        if (possible > space) {
+                            hightlightArea.bottom += space;
+                        } else {
+                            hightlightArea.bottom += possible;
+                            space -= possible;
+                            hightlightArea.top -= space;
+                        }
+                    } else {
+                        float possible = hightlightArea.top - imageArea.top;
+                        if (possible > space) {
+                            hightlightArea.top -= space;
+                        } else {
+                            hightlightArea.top -= possible;
+                            space -= possible;
+                            hightlightArea.bottom += space;
+                        }
+                    }
+                }
+            }
 
             invalidate();
         }
@@ -129,5 +171,37 @@ public class CropView extends View {
      */
     float getScale() {
         return scale;
+    }
+
+    /**
+     * Set the required aspect of the cropping area, with aspect = width / height.
+     *
+     * @param a the new aspect ratio
+     */
+    void setAspect(float a) {
+        aspect = a;
+        if (Math.abs(a) < 0.0001) {
+            aspect = 0;
+            aspectStr = null;
+        } else {
+            float heightDifference = hightlightArea.width() / aspect - hightlightArea.height();
+            if (hightlightArea.height() + heightDifference > imageArea.height()) {
+                hightlightArea.top = imageArea.top;
+                hightlightArea.bottom = imageArea.bottom;
+                float wideDifference = hightlightArea.width() - hightlightArea.height() * aspect;
+                hightlightArea.left += wideDifference / 2;
+                hightlightArea.right -= wideDifference / 2;
+            } else {
+                hightlightArea.top -= heightDifference / 2;
+                hightlightArea.bottom += heightDifference / 2;
+            }
+            for (int i = 2; i < 30; i++) {
+                if (aspect * i * 10 % 10 == 0) {
+                    aspectStr = (int) (aspect * i) + ":" + i;
+                    break;
+                }
+            }
+        }
+        invalidate();
     }
 }

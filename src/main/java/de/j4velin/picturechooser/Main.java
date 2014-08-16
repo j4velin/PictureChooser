@@ -59,6 +59,8 @@ public class Main extends FragmentActivity {
         if (getIntent().getBooleanExtra("crop", false)) {
             Bundle b = new Bundle();
             b.putString("imgPath", imgPath);
+            b.putFloat("aspect", getIntent().getIntExtra("aspectX", 0) /
+                    (float) getIntent().getIntExtra("aspectY", 1));
             Fragment f = new CropFragment();
             f.setArguments(b);
             getSupportFragmentManager().beginTransaction().replace(android.R.id.content, f)

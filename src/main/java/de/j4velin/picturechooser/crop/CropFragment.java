@@ -81,6 +81,7 @@ public class CropFragment extends Fragment {
         imagePosition.bottom = imagePosition.top + imageViewHeight;
         cv.setImagePosition(imagePosition);
         cv.setScale(imgDetails[0] / imagePosition.width());
+        cv.setAspect(getArguments().getFloat("aspect", 0));
 
         v.findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
