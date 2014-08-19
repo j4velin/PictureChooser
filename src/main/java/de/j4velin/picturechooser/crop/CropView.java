@@ -75,7 +75,7 @@ public class CropView extends View {
                         (int) (hightlightArea.height() * scale) + " px", hightlightArea.left + 10,
                 hightlightArea.bottom - 10, textPaint);
 
-        if (aspect != 0)
+        if (aspectStr != null)
             canvas.drawText(aspectStr, hightlightArea.right - textPaint.measureText(aspectStr) - 10,
                     hightlightArea.bottom - 10, textPaint);
     }
