@@ -41,7 +41,8 @@ public class BucketsFragment extends Fragment {
 
         Cursor cur = getActivity().getContentResolver()
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null,
-                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, " +
+                                MediaStore.Images.Media.DATE_MODIFIED + " DESC");
 
         final List<GridItem> buckets = new ArrayList<GridItem>();
         BucketItem lastBucket = null;
