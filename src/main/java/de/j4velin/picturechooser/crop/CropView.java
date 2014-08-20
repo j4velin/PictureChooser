@@ -201,6 +201,9 @@ public class CropView extends View {
                     break;
                 }
             }
+            if (aspectStr == null) {
+                aspectStr = Math.round(aspect * 10) + ":10";
+            }
         }
         invalidate();
     }
