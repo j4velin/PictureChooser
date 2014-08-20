@@ -65,9 +65,16 @@ public class CropFragment extends Fragment {
         float imageViewWidth = imgDetails[0];
         float imageViewHeight = imgDetails[1];
 
-        while (imageViewWidth > availableWidth || imageViewHeight > availableHeight) {
-            imageViewWidth *= 0.99f;
-            imageViewHeight *= 0.99f;
+        if (imageViewWidth > availableWidth || imageViewHeight > availableHeight) {
+            while (imageViewWidth > availableWidth || imageViewHeight > availableHeight) {
+                imageViewWidth *= 0.99f;
+                imageViewHeight *= 0.99f;
+            }
+        } else {
+            while (imageViewWidth < availableWidth && imageViewHeight < availableHeight) {
+                imageViewWidth *= 1.01f;
+                imageViewHeight *= 1.01f;
+            }
         }
 
         float spareWidth = availableWidth - imageViewWidth;
