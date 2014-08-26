@@ -41,8 +41,10 @@ findViewById(R.id.button).setOnClickListener(new OnClickListener() {
 ....
   
 protected void onActivityResult(int request, int result, final Intent data) {
-    String path = data.getStringExtra("imgPath");
-    ...
+    if (result == RESULT_OK && request == ADD_IMAGE) {
+        String path = data.getStringExtra("imgPath");
+        ...
+    }
 }
 
 ```
