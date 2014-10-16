@@ -57,5 +57,5 @@ Add the Android support library to build the project
 Apps using this library
 -----
 
-[Wallpaper Changer](https://play.google.com/store/apps/details?id=de.j4velin.wallpaperChanger)
-[Notification Toggle](https://play.google.com/store/apps/details?id=de.j4velin.notificationToggle)
+* [Wallpaper Changer](https://play.google.com/store/apps/details?id=de.j4velin.wallpaperChanger)
+* [Notification Toggle](https://play.google.com/store/apps/details?id=de.j4velin.notificationToggle)
