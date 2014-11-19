@@ -16,8 +16,6 @@ android {
 
     defaultConfig {
         applicationId "de.j4velin.picturechooser"
-        minSdkVersion 4
-        targetSdkVersion 19
     }
 
     buildTypes {
