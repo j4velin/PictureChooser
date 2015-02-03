@@ -30,6 +30,7 @@ import android.widget.ImageView;
 
 import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
+import de.j4velin.picturechooser.util.API17Wrapper;
 import de.j4velin.picturechooser.util.ImageLoader;
 
 public class CropFragment extends Fragment {
@@ -39,8 +40,14 @@ public class CropFragment extends Fragment {
         View v = inflater.inflate(R.layout.crop, null);
 
         DisplayMetrics metrics = new DisplayMetrics();
-        ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
-                .getMetrics(metrics);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) { // translucent bars
+            API17Wrapper.getRealMetrics(
+                    ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE))
+                            .getDefaultDisplay(), metrics);
+        } else {
+            ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE))
+                    .getDefaultDisplay().getMetrics(metrics);
+        }
 
         int availableHeight = metrics.heightPixels;
         int availableWidth = metrics.widthPixels;
@@ -65,27 +72,24 @@ public class CropFragment extends Fragment {
         float imageViewWidth = imgDetails[0];
         float imageViewHeight = imgDetails[1];
 
-        if (imageViewWidth > availableWidth || imageViewHeight > availableHeight) {
-            while (imageViewWidth > availableWidth || imageViewHeight > availableHeight) {
-                imageViewWidth *= 0.99f;
-                imageViewHeight *= 0.99f;
-            }
-        } else {
-            while (imageViewWidth < availableWidth && imageViewHeight < availableHeight) {
-                imageViewWidth *= 1.01f;
-                imageViewHeight *= 1.01f;
-            }
-        }
+        float factorWidth = availableWidth / imageViewWidth;
+        float factorHeight = availableHeight / imageViewHeight;
+        float smaller = Math.min(factorWidth, factorHeight);
+
+        imageViewHeight *= smaller;
+        imageViewWidth *= smaller;
 
         float spareWidth = availableWidth - imageViewWidth;
         float spareHeight = availableHeight - imageViewHeight;
 
         final CropView cv = (CropView) v.findViewById(R.id.crop);
         final RectF imagePosition = new RectF();
+
         imagePosition.left = spareWidth / 2;
         imagePosition.top = spareHeight / 2;
         imagePosition.right = imagePosition.left + imageViewWidth;
         imagePosition.bottom = imagePosition.top + imageViewHeight;
+
         cv.setImagePosition(imagePosition);
         cv.setScale(imgDetails[0] / imagePosition.width());
         cv.setAspect(getArguments().getFloat("aspect", 0));
