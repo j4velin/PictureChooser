@@ -30,6 +30,7 @@ import android.widget.ImageView;
 
 import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
+import de.j4velin.picturechooser.util.API11Wrapper;
 import de.j4velin.picturechooser.util.API17Wrapper;
 import de.j4velin.picturechooser.util.ImageLoader;
 
@@ -40,7 +41,7 @@ public class CropFragment extends Fragment {
         View v = inflater.inflate(R.layout.crop, null);
 
         DisplayMetrics metrics = new DisplayMetrics();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) { // translucent bars
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             API17Wrapper.getRealMetrics(
                     ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE))
                             .getDefaultDisplay(), metrics);
@@ -52,14 +53,18 @@ public class CropFragment extends Fragment {
         int availableHeight = metrics.heightPixels;
         int availableWidth = metrics.widthPixels;
 
-        TypedValue tv = new TypedValue();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB &&
+                API11Wrapper.hasActionBar(getActivity())) {
+            TypedValue tv = new TypedValue();
             if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
                 availableHeight -= TypedValue
                         .complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
         }
 
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) availableHeight -= getResources().getDimensionPixelSize(resourceId);
+
+        resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) availableHeight -= getResources().getDimensionPixelSize(resourceId);
 
         final float[] imgDetails = new float[3];

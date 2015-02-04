@@ -30,7 +30,7 @@ import java.io.IOException;
 
 import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
-import de.j4velin.picturechooser.util.ExternalDirWrapper;
+import de.j4velin.picturechooser.util.API8Wrapper;
 import de.j4velin.picturechooser.util.ImageLoader;
 
 class SaveTask extends AsyncTask<String, Void, String> {
@@ -149,7 +149,7 @@ class SaveTask extends AsyncTask<String, Void, String> {
         String path;
         try {
             path = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO ?
-                    ExternalDirWrapper.getExternalFilesDir(main).getAbsolutePath() + "/image_" :
+                    API8Wrapper.getExternalFilesDir(main).getAbsolutePath() + "/image_" :
                     Environment.getExternalStorageDirectory().getAbsolutePath() +
                             "/Android/data/" + main.getPackageName() + "/files/image_";
         } catch (NullPointerException e) { // should not happen when media

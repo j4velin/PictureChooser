@@ -15,7 +15,7 @@
         android:largeHeap="true">
         <activity
             android:name="de.j4velin.picturechooser.Main"
-            android:theme="@style/main"/>
+            android:theme="@style/LibTheme.PictureChooser"/>
     </application>
 
 </manifest>
