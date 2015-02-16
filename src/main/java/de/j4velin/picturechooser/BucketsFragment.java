@@ -58,12 +58,14 @@ public class BucketsFragment extends Fragment {
         if (cur != null) {
             if (cur.moveToFirst()) {
                 while (!cur.isAfterLast()) {
-                    if (lastBucket == null || !lastBucket.name.equals(cur.getString(1))) {
-                        lastBucket =
-                                new BucketItem(cur.getString(1), cur.getString(0), cur.getInt(2));
-                        buckets.add(lastBucket);
-                    } else {
-                        lastBucket.images++;
+                    if (cur.getString(1) != null) {
+                        if (lastBucket == null || !lastBucket.name.equals(cur.getString(1))) {
+                            lastBucket = new BucketItem(cur.getString(1), cur.getString(0),
+                                    cur.getInt(2));
+                            buckets.add(lastBucket);
+                        } else {
+                            lastBucket.images++;
+                        }
                     }
                     cur.moveToNext();
                 }

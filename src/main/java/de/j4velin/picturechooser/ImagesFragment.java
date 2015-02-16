@@ -56,7 +56,8 @@ public class ImagesFragment extends Fragment {
         if (cur != null) {
             if (cur.moveToFirst()) {
                 while (!cur.isAfterLast()) {
-                    images.add(new GridItem(cur.getString(1), cur.getString(0)));
+                    if (cur.getString(1) != null)
+                        images.add(new GridItem(cur.getString(1), cur.getString(0)));
                     cur.moveToNext();
                 }
             }
