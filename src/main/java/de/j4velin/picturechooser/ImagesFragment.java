@@ -15,9 +15,6 @@
  */
 package de.j4velin.picturechooser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -29,7 +26,18 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ImagesFragment extends Fragment {
+
+    private GalleryAdapter adapter;
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (adapter != null) adapter.shutdown();
+    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -40,7 +48,8 @@ public class ImagesFragment extends Fragment {
                         new String[]{MediaStore.Images.Media.DATA,
                                 MediaStore.Images.Media.DISPLAY_NAME},
                         MediaStore.Images.Media.BUCKET_ID + " = ?",
-                        new String[]{String.valueOf(getArguments().getInt("bucket"))}, MediaStore.Images.Media.DATE_MODIFIED + " DESC");
+                        new String[]{String.valueOf(getArguments().getInt("bucket"))},
+                        MediaStore.Images.Media.DATE_MODIFIED + " DESC");
 
         final List<GridItem> images = new ArrayList<GridItem>(cur.getCount());
 
@@ -55,7 +64,8 @@ public class ImagesFragment extends Fragment {
         }
 
         GridView grid = (GridView) v.findViewById(R.id.grid);
-        grid.setAdapter(new GalleryAdapter(getActivity(), images));
+        adapter = new GalleryAdapter(getActivity(), images);
+        grid.setAdapter(adapter);
         grid.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
