@@ -73,7 +73,7 @@ class GalleryAdapter extends BaseAdapter {
             holder.text.setText(bi.images > 1 ?
                             bi.name + " - " + context.getString(R.string.images, bi.images) :
                             bi.name);
-            imageLoader.DisplayImage(bi.path, holder.icon);
+            imageLoader.displayImage(bi.path, holder.icon);
             return convertView;
         } else { // show images in a bucket
             ImageView imageView;
@@ -82,7 +82,7 @@ class GalleryAdapter extends BaseAdapter {
             } else {
                 imageView = (ImageView) convertView;
             }
-            imageLoader.DisplayImage(items.get(position).path, imageView);
+            imageLoader.displayImage(items.get(position).path, imageView);
             return imageView;
         }
     }

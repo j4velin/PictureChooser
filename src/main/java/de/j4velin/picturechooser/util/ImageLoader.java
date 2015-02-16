@@ -36,7 +36,7 @@ public class ImageLoader {
 
     private static final int stub_id = R.drawable.ic_menu_gallery;
 
-    public void DisplayImage(final String pfad, final ImageView imageView) {
+    public void displayImage(final String pfad, final ImageView imageView) {
         imageViews.put(imageView, pfad);
         Bitmap bitmap = memoryCache.get(pfad);
         if (bitmap != null) imageView.setImageBitmap(bitmap);
