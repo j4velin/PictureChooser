@@ -47,7 +47,11 @@ public class ImageLoader {
     }
 
     private void queuePhoto(final String pfad, final ImageView imageView) {
-        executorService.submit(new PhotosLoader(new PhotoToLoad(pfad, imageView)));
+        try {
+            executorService.submit(new PhotosLoader(new PhotoToLoad(pfad, imageView)));
+        } catch (OutOfMemoryError oom) {
+            if (BuildConfig.DEBUG) Logger.log(oom);
+        }
     }
 
     private static Bitmap decode(final String pfad) {
