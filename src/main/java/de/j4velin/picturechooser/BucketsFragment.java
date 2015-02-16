@@ -15,9 +15,6 @@
  */
 package de.j4velin.picturechooser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -30,7 +27,18 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BucketsFragment extends Fragment {
+
+    private GalleryAdapter adapter;
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (adapter != null) adapter.shutdown();
+    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -68,7 +76,8 @@ public class BucketsFragment extends Fragment {
             getActivity().finish();
         } else {
             GridView grid = (GridView) v.findViewById(R.id.grid);
-            grid.setAdapter(new GalleryAdapter(getActivity(), buckets));
+            adapter = new GalleryAdapter(getActivity(), buckets);
+            grid.setAdapter(adapter);
             grid.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

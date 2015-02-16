@@ -28,7 +28,7 @@ public class ImageLoader {
     private static final MemoryCache memoryCache = new MemoryCache();
     private final Map<ImageView, String> imageViews =
             Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
-    private final ExecutorService executorService;
+    public final ExecutorService executorService;
 
     public ImageLoader() {
         executorService = Executors.newCachedThreadPool();

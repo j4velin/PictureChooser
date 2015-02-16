@@ -41,6 +41,10 @@ class GalleryAdapter extends BaseAdapter {
         this.mInflater = LayoutInflater.from(context);
     }
 
+    public void shutdown() {
+        imageLoader.executorService.shutdownNow();
+    }
+
     @Override
     public int getCount() {
         return items.size();
