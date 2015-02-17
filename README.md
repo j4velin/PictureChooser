@@ -56,6 +56,8 @@ Add the Android support library to build the project
 
 Apps using this library
 -----
+Please send a pull request if your app uses this library
 
 * [Wallpaper Changer](https://play.google.com/store/apps/details?id=de.j4velin.wallpaperChanger)
 * [Notification Toggle](https://play.google.com/store/apps/details?id=de.j4velin.notificationToggle)
+* [Delayed Lock](https://play.google.com/store/apps/details?id=de.j4velin.delayedlock2.trial)
