@@ -47,13 +47,36 @@ public class BucketsFragment extends Fragment {
         String[] projection = new String[]{MediaStore.Images.Media.DATA,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.BUCKET_ID};
 
+        final List<GridItem> buckets = new ArrayList<GridItem>();
+        BucketItem lastBucket = null;
+
         Cursor cur = getActivity().getContentResolver()
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null,
                         MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, " +
                                 MediaStore.Images.Media.DATE_MODIFIED + " DESC");
 
-        final List<GridItem> buckets = new ArrayList<GridItem>();
-        BucketItem lastBucket = null;
+        if (cur != null) {
+            if (cur.moveToFirst()) {
+                while (!cur.isAfterLast()) {
+                    if (cur.getString(1) != null) {
+                        if (lastBucket == null || !lastBucket.name.equals(cur.getString(1))) {
+                            lastBucket = new BucketItem(cur.getString(1), cur.getString(0),
+                                    cur.getInt(2));
+                            buckets.add(lastBucket);
+                        } else {
+                            lastBucket.images++;
+                        }
+                    }
+                    cur.moveToNext();
+                }
+            }
+            cur.close();
+        }
+
+        cur = getActivity().getContentResolver()
+                .query(MediaStore.Images.Media.INTERNAL_CONTENT_URI, projection, null, null,
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, " +
+                                MediaStore.Images.Media.DATE_MODIFIED + " DESC");
 
         if (cur != null) {
             if (cur.moveToFirst()) {
