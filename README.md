@@ -12,6 +12,12 @@ PictureChooser
 
 Usage
 -----
+Add to your gradle.build file:
+```
+dependencies {
+    compile 'com.github.j4velin.PictureChooser:picturechooser:+'
+}
+```
 
 Start with
 ```java
