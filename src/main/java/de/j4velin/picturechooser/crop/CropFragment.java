@@ -16,79 +16,93 @@
 package de.j4velin.picturechooser.crop;
 
 import android.content.Context;
+import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import de.j4velin.picturechooser.BuildConfig;
+import de.j4velin.picturechooser.Logger;
 import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
+import de.j4velin.picturechooser.util.API16Wrapper;
+import de.j4velin.picturechooser.util.API17Wrapper;
 import de.j4velin.picturechooser.util.ImageLoader;
 
 public class CropFragment extends Fragment {
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.crop, null);
+        final View v = inflater.inflate(R.layout.crop, null);
 
         DisplayMetrics metrics = new DisplayMetrics();
-        ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
-                .getMetrics(metrics);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            API17Wrapper.getRealMetrics(
+                    ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE))
+                            .getDefaultDisplay(), metrics);
+        } else {
+            ((WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE))
+                    .getDefaultDisplay().getMetrics(metrics);
+        }
 
         int availableHeight = metrics.heightPixels;
         int availableWidth = metrics.widthPixels;
 
-        TypedValue tv = new TypedValue();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (getActivity().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-                availableHeight -= TypedValue
-                        .complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
-        }
+        final ImageView iv = (ImageView) v.findViewById(R.id.image);
+        final float[] imageData = new float[3];
 
-        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) availableHeight -= getResources().getDimensionPixelSize(resourceId);
-
-        final float[] imgDetails = new float[3];
-
-        ImageView iv = (ImageView) v.findViewById(R.id.image);
         iv.setImageBitmap(ImageLoader
                 .decode(getArguments().getString("imgPath"), availableWidth, availableHeight,
-                        imgDetails));
-
-        float imageViewWidth = imgDetails[0];
-        float imageViewHeight = imgDetails[1];
-
-        if (imageViewWidth > availableWidth || imageViewHeight > availableHeight) {
-            while (imageViewWidth > availableWidth || imageViewHeight > availableHeight) {
-                imageViewWidth *= 0.99f;
-                imageViewHeight *= 0.99f;
-            }
-        } else {
-            while (imageViewWidth < availableWidth && imageViewHeight < availableHeight) {
-                imageViewWidth *= 1.01f;
-                imageViewHeight *= 1.01f;
-            }
-        }
-
-        float spareWidth = availableWidth - imageViewWidth;
-        float spareHeight = availableHeight - imageViewHeight;
+                        imageData));
 
         final CropView cv = (CropView) v.findViewById(R.id.crop);
         final RectF imagePosition = new RectF();
-        imagePosition.left = spareWidth / 2;
-        imagePosition.top = spareHeight / 2;
-        imagePosition.right = imagePosition.left + imageViewWidth;
-        imagePosition.bottom = imagePosition.top + imageViewHeight;
-        cv.setImagePosition(imagePosition);
-        cv.setScale(imgDetails[0] / imagePosition.width());
-        cv.setAspect(getArguments().getFloat("aspect", 0));
+
+        iv.getViewTreeObserver()
+                .addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                    @Override
+                    public void onGlobalLayout() {
+                        if (Build.VERSION.SDK_INT >= 16) {
+                            API16Wrapper.removeTreeObserver(iv.getViewTreeObserver(), this);
+                        } else {
+                            iv.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        }
+
+                        /**
+                         * based on chteuchteu's solution on
+                         * http://stackoverflow.com/questions/16193282/how-to-get-the-position-of-a-picture-inside-an-imageview
+                         */
+                        float[] f = new float[9];
+                        iv.getImageMatrix().getValues(f);
+
+                        int imageWidth = (int) (imageData[0] * f[Matrix.MSCALE_X]);
+                        int imageHeight = (int) (imageData[1] * f[Matrix.MSCALE_Y]);
+
+                        if (BuildConfig.DEBUG)
+                            Logger.log("Scaled image: " + imageWidth + "x" + imageHeight);
+
+                        imagePosition.left = (iv.getWidth() - imageWidth) / 2;
+                        imagePosition.top = (iv.getHeight() - imageHeight) / 2;
+                        imagePosition.right = imagePosition.left + imageWidth;
+                        imagePosition.bottom = imagePosition.top + imageHeight;
+
+                        if (BuildConfig.DEBUG)
+                            Logger.log("Image position: " + imagePosition.toString());
+
+                        cv.setImagePosition(imagePosition);
+                        cv.setScale(imageData[0] / imagePosition.width());
+                        cv.setAspect(getArguments().getFloat("aspect", 0));
+                    }
+                });
 
         v.findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override

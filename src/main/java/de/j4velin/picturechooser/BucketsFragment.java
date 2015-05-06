@@ -15,9 +15,6 @@
  */
 package de.j4velin.picturechooser;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -30,7 +27,18 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BucketsFragment extends Fragment {
+
+    private GalleryAdapter adapter;
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (adapter != null) adapter.shutdown();
+    }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
@@ -39,23 +47,48 @@ public class BucketsFragment extends Fragment {
         String[] projection = new String[]{MediaStore.Images.Media.DATA,
                 MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.BUCKET_ID};
 
+        final List<GridItem> buckets = new ArrayList<GridItem>();
+        BucketItem lastBucket = null;
+
         Cursor cur = getActivity().getContentResolver()
                 .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null,
                         MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, " +
                                 MediaStore.Images.Media.DATE_MODIFIED + " DESC");
 
-        final List<GridItem> buckets = new ArrayList<GridItem>();
-        BucketItem lastBucket = null;
+        if (cur != null) {
+            if (cur.moveToFirst()) {
+                while (!cur.isAfterLast()) {
+                    if (cur.getString(1) != null) {
+                        if (lastBucket == null || !lastBucket.name.equals(cur.getString(1))) {
+                            lastBucket = new BucketItem(cur.getString(1), cur.getString(0),
+                                    cur.getInt(2));
+                            buckets.add(lastBucket);
+                        } else {
+                            lastBucket.images++;
+                        }
+                    }
+                    cur.moveToNext();
+                }
+            }
+            cur.close();
+        }
+
+        cur = getActivity().getContentResolver()
+                .query(MediaStore.Images.Media.INTERNAL_CONTENT_URI, projection, null, null,
+                        MediaStore.Images.Media.BUCKET_DISPLAY_NAME + " ASC, " +
+                                MediaStore.Images.Media.DATE_MODIFIED + " DESC");
 
         if (cur != null) {
             if (cur.moveToFirst()) {
                 while (!cur.isAfterLast()) {
-                    if (lastBucket == null || !lastBucket.name.equals(cur.getString(1))) {
-                        lastBucket =
-                                new BucketItem(cur.getString(1), cur.getString(0), cur.getInt(2));
-                        buckets.add(lastBucket);
-                    } else {
-                        lastBucket.images++;
+                    if (cur.getString(1) != null) {
+                        if (lastBucket == null || !lastBucket.name.equals(cur.getString(1))) {
+                            lastBucket = new BucketItem(cur.getString(1), cur.getString(0),
+                                    cur.getInt(2));
+                            buckets.add(lastBucket);
+                        } else {
+                            lastBucket.images++;
+                        }
                     }
                     cur.moveToNext();
                 }
@@ -68,7 +101,8 @@ public class BucketsFragment extends Fragment {
             getActivity().finish();
         } else {
             GridView grid = (GridView) v.findViewById(R.id.grid);
-            grid.setAdapter(new GalleryAdapter(getActivity(), buckets));
+            adapter = new GalleryAdapter(getActivity(), buckets);
+            grid.setAdapter(adapter);
             grid.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

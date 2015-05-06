@@ -21,8 +21,9 @@ import android.os.Build;
 
 import java.io.File;
 
-public class API5Wrapper {
-    @TargetApi(Build.VERSION_CODES.ECLAIR)
+@TargetApi(Build.VERSION_CODES.ECLAIR)
+public abstract class API5Wrapper {
+
     public static int getOrientation(final String imagePath) {
         int rotate = 0;
         try {

@@ -40,6 +40,9 @@ public class CropView extends View {
     private float aspect; // aspect ratio
     private String aspectStr; // ratio in human readable form (4:3, 16:9 etc.)
 
+    private boolean moving; // true, if currently moving the whole highlighted area around
+    private float lastX, lastY;
+
     public CropView(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         darkAreaPaint.setColor(Color.argb(128, 0, 0, 0));
@@ -82,51 +85,76 @@ public class CropView extends View {
 
     @Override
     public boolean onTouchEvent(final MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_MOVE) {
-            float old = hightlightArea.width();
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            moving = false;
+        } else if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            moving = hightlightArea.contains(event.getX(), event.getY());
+            RectF inner = new RectF(hightlightArea);
+            float paddingHorizontal = 0.1f * inner.width();
+            float paddingVertical = 0.1f * inner.height();
+            inner.set(inner.left + paddingHorizontal, inner.top + paddingVertical,
+                    inner.right - paddingHorizontal, inner.bottom - paddingVertical);
+            moving = inner.contains(event.getX(), event.getY());
+            lastX = event.getX();
+            lastY = event.getY();
+        } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+            if (moving) {
+                float dx = event.getX() - lastX;
+                if (hightlightArea.left + dx < imageArea.left) dx = 0;
+                else if (hightlightArea.right + dx > imageArea.right) dx = 0;
 
-            if (event.getX() > hightlightArea.width() / 2 + hightlightArea.left)
-                hightlightArea.right = Math.min(event.getX(), imageArea.right);
-            else hightlightArea.left = Math.max(event.getX(), imageArea.left);
+                float dy = event.getY() - lastY;
+                if (hightlightArea.top + dy < imageArea.top) dy = 0;
+                else if (hightlightArea.bottom + dy > imageArea.bottom) dy = 0;
 
-            if (aspect == 0) {
-                if (event.getY() > hightlightArea.height() / 2 + hightlightArea.top)
-                    hightlightArea.bottom = Math.min(event.getY(), imageArea.bottom);
-                else hightlightArea.top = Math.max(event.getY(), imageArea.top);
+                hightlightArea.offset(dx, dy);
+                lastX = event.getX();
+                lastY = event.getY();
             } else {
-                float factor = hightlightArea.width() / old - 1;
-                float space = hightlightArea.height() * factor;
-                if (space > imageArea.height() - hightlightArea.height()) {
-                    hightlightArea.top = imageArea.top;
-                    hightlightArea.bottom = imageArea.bottom;
-                    if (event.getX() > hightlightArea.width() / 2 + hightlightArea.left)
-                        hightlightArea.right =
-                                hightlightArea.left + hightlightArea.height() * aspect;
-                    else hightlightArea.left =
-                            hightlightArea.right - hightlightArea.height() * aspect;
+                float old = hightlightArea.width();
+
+                if (event.getX() > hightlightArea.width() / 2 + hightlightArea.left)
+                    hightlightArea.right = Math.min(event.getX(), imageArea.right);
+                else hightlightArea.left = Math.max(event.getX(), imageArea.left);
+
+                if (aspect == 0) {
+                    if (event.getY() > hightlightArea.height() / 2 + hightlightArea.top)
+                        hightlightArea.bottom = Math.min(event.getY(), imageArea.bottom);
+                    else hightlightArea.top = Math.max(event.getY(), imageArea.top);
                 } else {
-                    if (event.getY() > hightlightArea.height() / 2 + hightlightArea.top) {
-                        float possible = imageArea.bottom - hightlightArea.bottom;
-                        if (possible > space) {
-                            hightlightArea.bottom += space;
-                        } else {
-                            hightlightArea.bottom += possible;
-                            space -= possible;
-                            hightlightArea.top -= space;
-                        }
+                    float factor = hightlightArea.width() / old - 1;
+                    float space = hightlightArea.height() * factor;
+                    if (space > imageArea.height() - hightlightArea.height()) {
+                        hightlightArea.top = imageArea.top;
+                        hightlightArea.bottom = imageArea.bottom;
+                        if (event.getX() > hightlightArea.width() / 2 + hightlightArea.left)
+                            hightlightArea.right =
+                                    hightlightArea.left + hightlightArea.height() * aspect;
+                        else hightlightArea.left =
+                                hightlightArea.right - hightlightArea.height() * aspect;
                     } else {
-                        float possible = hightlightArea.top - imageArea.top;
-                        if (possible > space) {
-                            hightlightArea.top -= space;
+                        if (event.getY() > hightlightArea.height() / 2 + hightlightArea.top) {
+                            float possible = imageArea.bottom - hightlightArea.bottom;
+                            if (possible > space) {
+                                hightlightArea.bottom += space;
+                            } else {
+                                hightlightArea.bottom += possible;
+                                space -= possible;
+                                hightlightArea.top -= space;
+                            }
                         } else {
-                            hightlightArea.top -= possible;
-                            space -= possible;
-                            hightlightArea.bottom += space;
+                            float possible = hightlightArea.top - imageArea.top;
+                            if (possible > space) {
+                                hightlightArea.top -= space;
+                            } else {
+                                hightlightArea.top -= possible;
+                                space -= possible;
+                                hightlightArea.bottom += space;
+                            }
                         }
                     }
                 }
             }
-
             invalidate();
         }
         return true;

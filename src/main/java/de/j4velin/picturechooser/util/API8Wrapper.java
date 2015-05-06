@@ -22,7 +22,7 @@ import android.os.Environment;
 import java.io.File;
 
 @TargetApi(8)
-public class ExternalDirWrapper {
+public abstract class API8Wrapper {
 
     public static File getExternalFilesDir(final Context c) {
         return c.getExternalFilesDir(Environment.DIRECTORY_PICTURES);

@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.os.Build;
+import android.support.v4.util.LruCache;
 import android.widget.ImageView;
 
 import java.util.Collections;
@@ -25,10 +26,18 @@ public class ImageLoader {
 
     private final static int THUMBNAIL_SIZE_PX = 300;
 
-    private static final MemoryCache memoryCache = new MemoryCache();
+    // Use 1/8th of the available memory for this memory cache
+    private final LruCache memoryCache =
+            new LruCache((int) (Runtime.getRuntime().maxMemory() / 1024) / 8) {
+                @Override
+                protected int sizeOf(final Object key, final Object value) {
+                    return Build.VERSION.SDK_INT >= 12 ? API12Wrapper.getByteCount((Bitmap) value) :
+                            ((Bitmap) value).getRowBytes() * ((Bitmap) value).getHeight();
+                }
+            };
     private final Map<ImageView, String> imageViews =
             Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
-    private final ExecutorService executorService;
+    public final ExecutorService executorService;
 
     public ImageLoader() {
         executorService = Executors.newCachedThreadPool();
@@ -36,9 +45,9 @@ public class ImageLoader {
 
     private static final int stub_id = R.drawable.ic_menu_gallery;
 
-    public void DisplayImage(final String pfad, final ImageView imageView) {
+    public void displayImage(final String pfad, final ImageView imageView) {
         imageViews.put(imageView, pfad);
-        Bitmap bitmap = memoryCache.get(pfad);
+        Bitmap bitmap = (Bitmap) memoryCache.get(pfad);
         if (bitmap != null) imageView.setImageBitmap(bitmap);
         else {
             queuePhoto(pfad, imageView);
@@ -47,7 +56,11 @@ public class ImageLoader {
     }
 
     private void queuePhoto(final String pfad, final ImageView imageView) {
-        executorService.submit(new PhotosLoader(new PhotoToLoad(pfad, imageView)));
+        try {
+            executorService.submit(new PhotosLoader(new PhotoToLoad(pfad, imageView)));
+        } catch (OutOfMemoryError oom) {
+            if (BuildConfig.DEBUG) Logger.log(oom);
+        }
     }
 
     private static Bitmap decode(final String pfad) {
