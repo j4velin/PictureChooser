@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: "com.jfrog.bintray"
 
-version = "1.0.1"
+version = "1.0.2"
 
 android {
     compileSdkVersion 21
@@ -95,6 +95,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 
 // https://github.com/bintray/gradle-bintray-plugin
 bintray {
+    dryRun = true
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
 
