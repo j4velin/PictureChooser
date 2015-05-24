@@ -60,9 +60,13 @@ public class BucketsFragment extends Fragment {
                 while (!cur.isAfterLast()) {
                     if (cur.getString(1) != null) {
                         if (lastBucket == null || !lastBucket.name.equals(cur.getString(1))) {
-                            lastBucket = new BucketItem(cur.getString(1), cur.getString(0),
-                                    cur.getInt(2));
-                            buckets.add(lastBucket);
+                            try {
+                                lastBucket = new BucketItem(cur.getString(1), cur.getString(0),
+                                        cur.getInt(2));
+                                buckets.add(lastBucket);
+                            } catch (IllegalArgumentException iae) {
+                                iae.printStackTrace();
+                            }
                         } else {
                             lastBucket.images++;
                         }
@@ -83,9 +87,13 @@ public class BucketsFragment extends Fragment {
                 while (!cur.isAfterLast()) {
                     if (cur.getString(1) != null) {
                         if (lastBucket == null || !lastBucket.name.equals(cur.getString(1))) {
-                            lastBucket = new BucketItem(cur.getString(1), cur.getString(0),
-                                    cur.getInt(2));
-                            buckets.add(lastBucket);
+                            try {
+                                lastBucket = new BucketItem(cur.getString(1), cur.getString(0),
+                                        cur.getInt(2));
+                                buckets.add(lastBucket);
+                            } catch (IllegalArgumentException iae) {
+                                iae.printStackTrace();
+                            }
                         } else {
                             lastBucket.images++;
                         }
