@@ -5,8 +5,15 @@ apply plugin: "com.jfrog.bintray"
 version = "1.0.2"
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+
+    if (rootProject.ext.has("compileSdkVersion")) {
+        compileSdkVersion rootProject.ext.compileSdkVersion
+        buildToolsVersion rootProject.ext.buildToolsVersion
+    } else {
+        logger.warn('compileSdkVersion not found in rootProject')
+        compileSdkVersion 22
+        buildToolsVersion "23.0.0 rc3"
+    }
 
     buildTypes {
         release {
