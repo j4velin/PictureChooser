@@ -15,16 +15,21 @@
  */
 package de.j4velin.picturechooser;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.PermissionChecker;
 
 import de.j4velin.picturechooser.crop.CropFragment;
 
 public class Main extends FragmentActivity {
+
+    private final static int REQUEST_READ_STORAGE_PERMISSION = 1;
 
     @SuppressLint("InlinedApi")
     @Override
@@ -33,6 +38,17 @@ public class Main extends FragmentActivity {
 
         setResult(RESULT_CANCELED);
 
+        if (PermissionChecker
+                .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                PermissionChecker.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    REQUEST_READ_STORAGE_PERMISSION);
+        } else {
+            showBuckets();
+        }
+    }
+
+    private void showBuckets() {
         // Create new fragment and transaction
         Fragment newFragment = new BucketsFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -79,5 +95,16 @@ public class Main extends FragmentActivity {
         result.putExtra("imgPath", imgPath);
         setResult(RESULT_OK, result);
         finish();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_READ_STORAGE_PERMISSION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                showBuckets();
+            } else {
+                finish();
+            }
+        }
     }
 }
