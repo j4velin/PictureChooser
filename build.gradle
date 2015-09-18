@@ -32,7 +32,7 @@ android {
 
 dependencies {
     // You must install or update the Support Repository through the SDK manager to use this dependency.
-    compile 'com.android.support:support-v4:23.0.0'
+    compile 'com.android.support:support-v4:23.0.1'
 }
 
 
@@ -102,7 +102,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 
 // https://github.com/bintray/gradle-bintray-plugin
 bintray {
-    dryRun = true
+    dryRun = false
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
 
