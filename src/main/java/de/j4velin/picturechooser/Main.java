@@ -16,9 +16,9 @@
 package de.j4velin.picturechooser;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -31,14 +31,13 @@ public class Main extends FragmentActivity {
 
     private final static int REQUEST_READ_STORAGE_PERMISSION = 1;
 
-    @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(final Bundle b) {
         super.onCreate(b);
 
         setResult(RESULT_CANCELED);
 
-        if (PermissionChecker
+        if (Build.VERSION.SDK_INT >= 23 && PermissionChecker
                 .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PermissionChecker.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
