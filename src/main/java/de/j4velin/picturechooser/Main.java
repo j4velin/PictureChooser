@@ -39,6 +39,8 @@ public class Main extends FragmentActivity {
 
         if (Build.VERSION.SDK_INT >= 23 && PermissionChecker
                 .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                PermissionChecker.PERMISSION_GRANTED && PermissionChecker
+                .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PermissionChecker.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     REQUEST_READ_STORAGE_PERMISSION);
