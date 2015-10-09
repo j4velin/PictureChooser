@@ -60,7 +60,12 @@ public class Main extends FragmentActivity {
         transaction.replace(android.R.id.content, newFragment);
 
         // Commit the transaction
-        transaction.commit();
+        try {
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     void showBucket(final int bucketId) {
