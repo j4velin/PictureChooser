@@ -84,6 +84,7 @@ task sourcesJar(type: Jar) {
 }
 
 task javadoc(type: Javadoc) {
+    failOnError false
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
@@ -102,7 +103,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 
 // https://github.com/bintray/gradle-bintray-plugin
 bintray {
-    dryRun = false
+    dryRun = true
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
 
