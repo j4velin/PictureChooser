@@ -16,7 +16,6 @@
 package de.j4velin.picturechooser;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -47,7 +46,7 @@ public class Main extends FragmentActivity {
 
     public final static String IMAGE_PATH = "imgPath";
 
-    private final static int REQUEST_READ_STORAGE_PERMISSION = 1;
+    private final static int REQUEST_STORAGE_PERMISSION = 1;
     private final static int REQUEST_IMAGE = 2;
 
     @Override
@@ -56,40 +55,40 @@ public class Main extends FragmentActivity {
 
         setResult(RESULT_CANCELED);
 
-        if (Build.VERSION.SDK_INT >= 19 && !getIntent().getBooleanExtra(EXTRA_CROP, false)) {
+        if (Build.VERSION.SDK_INT >= 23 && PermissionChecker
+                .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                PermissionChecker.PERMISSION_GRANTED && PermissionChecker
+                .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PermissionChecker.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
+        } else {
+            start();
+        }
+    }
+
+    private void start() {
+        if (Build.VERSION.SDK_INT >= 19) {
             startActivityForResult(
                     new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
                             .setType("image/*"), REQUEST_IMAGE);
         } else {
-            if (Build.VERSION.SDK_INT >= 23 && PermissionChecker
-                    .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
-                    PermissionChecker.PERMISSION_GRANTED && PermissionChecker
-                    .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
-                    PermissionChecker.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        REQUEST_READ_STORAGE_PERMISSION);
-            } else {
-                showBuckets();
+            // Create new fragment and transaction
+            Fragment newFragment = new BucketsFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this
+            // fragment,
+            // and add the transaction to the back stack
+            transaction.replace(android.R.id.content, newFragment);
+
+            // Commit the transaction
+            try {
+                transaction.commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+                finish();
             }
-        }
-    }
-
-    private void showBuckets() {
-        // Create new fragment and transaction
-        Fragment newFragment = new BucketsFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-        // Replace whatever is in the fragment_container view with this
-        // fragment,
-        // and add the transaction to the back stack
-        transaction.replace(android.R.id.content, newFragment);
-
-        // Commit the transaction
-        try {
-            transaction.commit();
-        } catch (Exception e) {
-            e.printStackTrace();
-            finish();
         }
     }
 
@@ -111,7 +110,7 @@ public class Main extends FragmentActivity {
             Fragment f = new CropFragment();
             f.setArguments(b);
             getSupportFragmentManager().beginTransaction().replace(android.R.id.content, f)
-                    .addToBackStack(null).commit();
+                    .addToBackStack(null).commitAllowingStateLoss();
         } else {
             returnResult(imgPath);
         }
@@ -130,9 +129,9 @@ public class Main extends FragmentActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == REQUEST_READ_STORAGE_PERMISSION) {
+        if (requestCode == REQUEST_STORAGE_PERMISSION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showBuckets();
+                start();
             } else {
                 finish();
             }
@@ -162,7 +161,7 @@ public class Main extends FragmentActivity {
                     }
                     output.flush();
 
-                    returnResult(f.getPath());
+                    imageSelected(f.getPath());
 
                 } catch (Exception e) {
                     Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
