@@ -26,7 +26,7 @@ class GridItem {
      * @param p the path to the item
      */
     public GridItem(final String n, final String p) {
-        if (p == null) throw new IllegalArgumentException("Path for " + n + "must not be null");
+        if (p == null) throw new IllegalArgumentException("Path for " + n + " must not be null");
         name = n;
         path = p;
     }

@@ -50,7 +50,6 @@ public class Main extends FragmentActivity {
     private final static int REQUEST_READ_STORAGE_PERMISSION = 1;
     private final static int REQUEST_IMAGE = 2;
 
-    @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(final Bundle b) {
         super.onCreate(b);
@@ -62,8 +61,10 @@ public class Main extends FragmentActivity {
                     new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
                             .setType("image/*"), REQUEST_IMAGE);
         } else {
-            if (PermissionChecker
+            if (Build.VERSION.SDK_INT >= 23 && PermissionChecker
                     .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                    PermissionChecker.PERMISSION_GRANTED && PermissionChecker
+                    .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                     PermissionChecker.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         REQUEST_READ_STORAGE_PERMISSION);
@@ -84,7 +85,12 @@ public class Main extends FragmentActivity {
         transaction.replace(android.R.id.content, newFragment);
 
         // Commit the transaction
-        transaction.commit();
+        try {
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
     }
 
     void showBucket(final int bucketId) {
