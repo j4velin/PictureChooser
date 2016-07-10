@@ -60,7 +60,7 @@ public class CropFragment extends Fragment {
         final float[] imageData = new float[3];
 
         iv.setImageBitmap(ImageLoader
-                .decode(getArguments().getString("imgPath"), availableWidth, availableHeight,
+                .decode(getArguments().getString(Main.IMAGE_PATH), availableWidth, availableHeight,
                         imageData));
 
         final CropView cv = (CropView) v.findViewById(R.id.crop);
@@ -108,7 +108,7 @@ public class CropFragment extends Fragment {
             @Override
             public void onClick(final View view) {
                 new SaveTask((Main) getActivity(), cv, imagePosition)
-                        .execute(getArguments().getString("imgPath"));
+                        .execute(getArguments().getString(Main.IMAGE_PATH));
             }
         });
         return v;
