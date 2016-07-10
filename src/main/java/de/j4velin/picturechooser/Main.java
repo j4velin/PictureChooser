@@ -188,4 +188,12 @@ public class Main extends FragmentActivity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (Build.VERSION.SDK_INT >= 19) {
+            start();
+        }
+    }
 }
