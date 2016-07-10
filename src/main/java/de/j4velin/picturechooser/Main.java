@@ -46,6 +46,8 @@ public class Main extends FragmentActivity {
 
     public final static String IMAGE_PATH = "imgPath";
 
+    public final static boolean DEBUG = false;
+
     private final static int REQUEST_STORAGE_PERMISSION = 1;
     private final static int REQUEST_IMAGE = 2;
 

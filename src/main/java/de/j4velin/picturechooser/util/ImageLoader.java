@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 
 import de.j4velin.picturechooser.BuildConfig;
 import de.j4velin.picturechooser.Logger;
+import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
 
 public class ImageLoader {
@@ -59,7 +60,7 @@ public class ImageLoader {
         try {
             executorService.submit(new PhotosLoader(new PhotoToLoad(pfad, imageView)));
         } catch (OutOfMemoryError oom) {
-            if (BuildConfig.DEBUG) Logger.log(oom);
+            if (Main.DEBUG) Logger.log(oom);
         }
     }
 
@@ -95,7 +96,7 @@ public class ImageLoader {
                     imgDetails[0] = imgHeight;
                     imgDetails[1] = imgWidth;
                 }
-                if (BuildConfig.DEBUG) Logger.log("rotate image by " + rotation);
+                if (Main.DEBUG) Logger.log("rotate image by " + rotation);
                 Bitmap image = BitmapFactory.decodeFile(pfad, options);
                 try {
                     return Bitmap.createBitmap(image, 0, 0, imgWidth / options.inSampleSize,
@@ -109,7 +110,7 @@ public class ImageLoader {
             }
         } catch (OutOfMemoryError oom) {
             oom.printStackTrace();
-            if (BuildConfig.DEBUG) {
+            if (Main.DEBUG) {
                 Logger.log("OOM when loading file " + pfad);
                 Logger.log(oom);
             }

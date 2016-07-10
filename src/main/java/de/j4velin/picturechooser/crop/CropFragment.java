@@ -29,7 +29,6 @@ import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
-import de.j4velin.picturechooser.BuildConfig;
 import de.j4velin.picturechooser.Logger;
 import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
@@ -55,6 +54,8 @@ public class CropFragment extends Fragment {
 
         int availableHeight = metrics.heightPixels;
         int availableWidth = metrics.widthPixels;
+
+        if (Main.DEBUG) Logger.log("available space: " + availableWidth + "x" + availableHeight);
 
         final ImageView iv = (ImageView) v.findViewById(R.id.image);
         final float[] imageData = new float[3];
@@ -84,19 +85,22 @@ public class CropFragment extends Fragment {
                         float[] f = new float[9];
                         iv.getImageMatrix().getValues(f);
 
-                        int imageWidth = (int) (imageData[0] * f[Matrix.MSCALE_X]);
-                        int imageHeight = (int) (imageData[1] * f[Matrix.MSCALE_Y]);
+                        int imageWidth = (int) (imageData[0] / imageData[2] * f[Matrix.MSCALE_X]);
+                        int imageHeight = (int) (imageData[1] / imageData[2] * f[Matrix.MSCALE_Y]);
 
-                        if (BuildConfig.DEBUG)
+                        if (Main.DEBUG) {
+                            Logger.log("imageData: " + imageData[0] + "," + imageData[1] + "," +
+                                    imageData[2]);
                             Logger.log("Scaled image: " + imageWidth + "x" + imageHeight);
+                            Logger.log("ImageView: " + iv.getWidth() + "x" + iv.getHeight());
+                        }
 
                         imagePosition.left = (iv.getWidth() - imageWidth) / 2;
                         imagePosition.top = (iv.getHeight() - imageHeight) / 2;
                         imagePosition.right = imagePosition.left + imageWidth;
                         imagePosition.bottom = imagePosition.top + imageHeight;
 
-                        if (BuildConfig.DEBUG)
-                            Logger.log("Image position: " + imagePosition.toString());
+                        if (Main.DEBUG) Logger.log("Image position: " + imagePosition.toString());
 
                         cv.setImagePosition(imagePosition);
                         cv.setScale(imageData[0] / imagePosition.width());

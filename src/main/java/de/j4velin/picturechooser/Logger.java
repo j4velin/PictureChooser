@@ -15,13 +15,13 @@
  */
 package de.j4velin.picturechooser;
 
+import android.database.Cursor;
+import android.os.Environment;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Date;
-
-import android.database.Cursor;
-import android.os.Environment;
 
 public abstract class Logger {
 
@@ -37,7 +37,7 @@ public abstract class Logger {
     }
 
     public static void log(final Cursor c) {
-        if (!BuildConfig.DEBUG) return;
+        if (!Main.DEBUG) return;
         c.moveToFirst();
         String title = "";
         for (int i = 0; i < c.getColumnCount(); i++)
@@ -54,7 +54,7 @@ public abstract class Logger {
 
     @SuppressWarnings("deprecation")
     public static void log(final String msg) {
-        if (!BuildConfig.DEBUG) return;
+        if (!Main.DEBUG) return;
         android.util.Log.d(APP, msg);
         try {
             if (fw == null) {
