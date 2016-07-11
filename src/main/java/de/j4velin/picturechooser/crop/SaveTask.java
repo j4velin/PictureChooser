@@ -22,6 +22,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 
 import java.io.File;
@@ -117,6 +118,14 @@ class SaveTask extends AsyncTask<String, Void, String> {
         } finally {
             try {
                 out.close();
+            } catch (Throwable ignore) {
+            }
+            try {
+                // try to delete the just created 'original' file
+                // dont delete file for SDK<19 - we didnt make a copy on those versions
+                if (Build.VERSION.SDK_INT >= 19) {
+                    new File(source).delete();
+                }
             } catch (Throwable ignore) {
             }
         }
