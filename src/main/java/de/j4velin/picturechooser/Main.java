@@ -151,8 +151,14 @@ public class Main extends FragmentActivity {
                     input = getContentResolver().openInputStream(uri);
                     String extension = MimeTypeMap.getSingleton()
                             .getExtensionFromMimeType(getContentResolver().getType(uri));
-                    File f = new File(API8Wrapper.getExternalFilesDir(this).getAbsolutePath(),
-                            uri.getLastPathSegment() + "." + extension);
+                    if (extension == null) extension = "jpg";
+                    File f;
+                    int pos = 0;
+                    do {
+                        f = new File(API8Wrapper.getExternalFilesDir(this).getAbsolutePath(),
+                                uri.getLastPathSegment() + "_" + pos + "." + extension);
+                        pos++;
+                    } while (f.exists());
                     output = new FileOutputStream(f);
 
                     byte[] buffer = new byte[4096];
@@ -172,12 +178,12 @@ public class Main extends FragmentActivity {
                 } finally {
                     try {
                         input.close();
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     try {
                         output.close();
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
