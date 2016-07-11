@@ -71,6 +71,7 @@ class SaveTask extends AsyncTask<String, Void, String> {
         }
     }
 
+    @SuppressWarnings("WrongThread")
     @Override
     protected String doInBackground(final String... original) {
         return save(original[0], calculateSize(cv.getCropArea(), imagePosition, cv.getScale()));
@@ -84,9 +85,6 @@ class SaveTask extends AsyncTask<String, Void, String> {
      * @return null or a string containing information about an error
      */
     private String save(final String source, final Rect crop) {
-        if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            return main.getString(R.string.external_not_available);
-        }
         final String destination;
         try {
             destination = createNewCroppingFile();
@@ -156,16 +154,31 @@ class SaveTask extends AsyncTask<String, Void, String> {
         File tmpFile;
         int test = 0;
         String path;
-        try {
-            path = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO ?
-                    API8Wrapper.getExternalFilesDir(main).getAbsolutePath() + "/image_" :
-                    Environment.getExternalStorageDirectory().getAbsolutePath() +
-                            "/Android/data/" + main.getPackageName() + "/files/image_";
-        } catch (NullPointerException e) { // should not happen when media
-            // is mounted, but seems to
-            // happen anyway
-            return null;
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            try {
+                path = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO ?
+                        API8Wrapper.getExternalFilesDir(main).getAbsolutePath() + "/image_" :
+                        Environment.getExternalStorageDirectory().getAbsolutePath() +
+                                "/Android/data/" + main.getPackageName() + "/files/image_";
+                do {
+                    test++;
+                    tmpFile = new File(path + test + ".jpg");
+                } while (tmpFile.length() > 0);
+                File parent = tmpFile.getParentFile();
+                if (parent == null || !parent.exists()) {
+                    tmpFile.mkdirs();
+                }
+                tmpFile.createNewFile();
+                return tmpFile.getAbsolutePath();
+            } catch (Throwable t) {
+                t.printStackTrace();
+            }
         }
+
+        // not successful yet? try internal storage
+
+        path = main.getFilesDir() + "/image_";
+        test = 0;
         do {
             test++;
             tmpFile = new File(path + test + ".jpg");
