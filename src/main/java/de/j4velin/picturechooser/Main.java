@@ -16,6 +16,7 @@
 package de.j4velin.picturechooser;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -30,7 +31,6 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -71,26 +71,33 @@ public class Main extends FragmentActivity {
 
     private void start() {
         if (Build.VERSION.SDK_INT >= 19) {
-            startActivityForResult(
-                    new Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
-                            .setType("image/*"), REQUEST_IMAGE);
-        } else {
-            // Create new fragment and transaction
-            Fragment newFragment = new BucketsFragment();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-
-            // Replace whatever is in the fragment_container view with this
-            // fragment,
-            // and add the transaction to the back stack
-            transaction.replace(android.R.id.content, newFragment);
-
-            // Commit the transaction
             try {
-                transaction.commit();
-            } catch (Exception e) {
-                e.printStackTrace();
-                finish();
+                startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT)
+                        .addCategory(Intent.CATEGORY_OPENABLE).setType("image/*"), REQUEST_IMAGE);
+            } catch (ActivityNotFoundException e) {
+                showInternalPictureChooser();
             }
+        } else {
+            showInternalPictureChooser();
+        }
+    }
+
+    private void showInternalPictureChooser() {
+        // Create new fragment and transaction
+        Fragment newFragment = new BucketsFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+        // Replace whatever is in the fragment_container view with this
+        // fragment,
+        // and add the transaction to the back stack
+        transaction.replace(android.R.id.content, newFragment);
+
+        // Commit the transaction
+        try {
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
         }
     }
 
