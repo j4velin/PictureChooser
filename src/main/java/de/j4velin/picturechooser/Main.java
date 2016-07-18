@@ -126,6 +126,7 @@ public class Main extends FragmentActivity {
     }
 
     public void cropped(final String imgPath) {
+        if (Main.DEBUG) Logger.log("Cropped file created: " + imgPath);
         returnResult(imgPath);
     }
 
@@ -137,7 +138,8 @@ public class Main extends FragmentActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
         if (requestCode == REQUEST_STORAGE_PERMISSION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 start();
@@ -166,6 +168,21 @@ public class Main extends FragmentActivity {
                                 uri.getLastPathSegment() + "_" + pos + "." + extension);
                         pos++;
                     } while (f.exists());
+
+                    try {
+                        if (!f.createNewFile())
+                            throw new IOException(f.getAbsolutePath() + " can not be created");
+                    } catch (Exception e) {
+                        pos = 0;
+                        do {
+                            f = new File(getFilesDir(),
+                                    uri.getLastPathSegment() + "_" + pos + "." + extension);
+                            pos++;
+                        } while (f.exists());
+                        if (!f.createNewFile())
+                            throw new IOException(f.getAbsolutePath() + " can not be created");
+                    }
+
                     output = new FileOutputStream(f);
 
                     byte[] buffer = new byte[4096];
@@ -175,6 +192,8 @@ public class Main extends FragmentActivity {
                         output.write(buffer, 0, read);
                     }
                     output.flush();
+
+                    if (Main.DEBUG) Logger.log("File created: " + f.getAbsolutePath());
 
                     imageSelected(f.getPath());
 
