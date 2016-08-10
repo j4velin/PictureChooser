@@ -41,7 +41,8 @@ public class BucketsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.gallery, null);
 
         String[] projection = new String[]{MediaStore.Images.Media.DATA,
@@ -59,7 +60,7 @@ public class BucketsFragment extends Fragment {
             if (cur.moveToFirst()) {
                 while (!cur.isAfterLast()) {
                     if (cur.getString(1) != null) {
-                        if (lastBucket == null || !lastBucket.name.equals(cur.getString(1))) {
+                        if (lastBucket == null || lastBucket.id != cur.getInt(2)) {
                             try {
                                 lastBucket = new BucketItem(cur.getString(1), cur.getString(0),
                                         cur.getInt(2));
