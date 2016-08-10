@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
@@ -153,19 +154,30 @@ public class Main extends FragmentActivity {
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         if (requestCode == REQUEST_IMAGE) {
             if (resultCode == RESULT_OK) {
+                Uri uri = data.getData();
+                File f = new File(uri.getPath());
+                if (f.exists() && f.canRead()) {
+                    // locally available file, not need to copy
+                    imageSelected(f.getAbsolutePath());
+                    return;
+                }
                 InputStream input = null;
                 OutputStream output = null;
-                Uri uri = data.getData();
                 try {
+                    String imageName = uri.getLastPathSegment();
+                    if (imageName == null) {
+                        imageName = "image";
+                    } else if (imageName.contains("/")) {
+                        imageName = imageName.substring(imageName.lastIndexOf("/"));
+                    }
                     input = getContentResolver().openInputStream(uri);
                     String extension = MimeTypeMap.getSingleton()
                             .getExtensionFromMimeType(getContentResolver().getType(uri));
                     if (extension == null) extension = "jpg";
-                    File f;
                     int pos = 0;
                     do {
                         f = new File(API8Wrapper.getExternalFilesDir(this).getAbsolutePath(),
-                                uri.getLastPathSegment() + "_" + pos + "." + extension);
+                                imageName + "_" + pos + "." + extension);
                         pos++;
                     } while (f.exists());
 
