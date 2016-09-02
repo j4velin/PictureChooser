@@ -107,8 +107,9 @@ class SaveTask extends AsyncTask<String, Void, String> {
             out = new FileOutputStream(destination);
             Bitmap.createBitmap(original, (int) (crop.left / imgDetails[2]),
                     (int) (crop.top / imgDetails[2]), (int) (crop.right / imgDetails[2]),
-                    (int) (crop.bottom / imgDetails[2]), null, true)
-                    .compress(Bitmap.CompressFormat.JPEG, 100, out);
+                    (int) (crop.bottom / imgDetails[2]), null, true).compress(
+                    original.hasAlpha() ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG,
+                    100, out);
             main.cropped(destination);
         } catch (Throwable e) {
             e.printStackTrace();
