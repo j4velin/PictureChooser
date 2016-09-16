@@ -75,6 +75,7 @@ public class CropFragment extends Fragment {
                         if (Build.VERSION.SDK_INT >= 16) {
                             API16Wrapper.removeTreeObserver(iv.getViewTreeObserver(), this);
                         } else {
+                            //noinspection deprecation
                             iv.getViewTreeObserver().removeGlobalOnLayoutListener(this);
                         }
 

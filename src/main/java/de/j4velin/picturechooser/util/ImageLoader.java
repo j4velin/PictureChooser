@@ -18,7 +18,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import de.j4velin.picturechooser.BuildConfig;
 import de.j4velin.picturechooser.Logger;
 import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
@@ -28,12 +27,12 @@ public class ImageLoader {
     private final static int THUMBNAIL_SIZE_PX = 300;
 
     // Use 1/8th of the available memory for this memory cache
-    private final LruCache memoryCache =
-            new LruCache((int) (Runtime.getRuntime().maxMemory() / 1024) / 8) {
+    private final LruCache<String, Bitmap> memoryCache =
+            new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024) / 8) {
                 @Override
-                protected int sizeOf(final Object key, final Object value) {
-                    return Build.VERSION.SDK_INT >= 12 ? API12Wrapper.getByteCount((Bitmap) value) :
-                            ((Bitmap) value).getRowBytes() * ((Bitmap) value).getHeight();
+                protected int sizeOf(final String key, final Bitmap value) {
+                    return Build.VERSION.SDK_INT >= 12 ? API12Wrapper.getByteCount(value) :
+                            value.getRowBytes() * value.getHeight();
                 }
             };
     private final Map<ImageView, String> imageViews =
@@ -48,7 +47,7 @@ public class ImageLoader {
 
     public void displayImage(final String pfad, final ImageView imageView) {
         imageViews.put(imageView, pfad);
-        Bitmap bitmap = (Bitmap) memoryCache.get(pfad);
+        Bitmap bitmap = memoryCache.get(pfad);
         if (bitmap != null) imageView.setImageBitmap(bitmap);
         else {
             queuePhoto(pfad, imageView);
@@ -69,7 +68,8 @@ public class ImageLoader {
     }
 
     // decodes image and scales it to reduce memory consumption
-    public static Bitmap decode(final String pfad, int width, int height, final float[] imgDetails) {
+    public static Bitmap decode(final String pfad, int width, int height,
+                                final float[] imgDetails) {
         Options options = new Options();
         options.inJustDecodeBounds = true;
         options.inSampleSize = 1;
