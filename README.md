@@ -1,6 +1,8 @@
 PictureChooser
 ==============
 
+[![Build Status](https://travis-ci.org/j4velin/PictureChooser.svg?branch=master)](https://travis-ci.org/j4velin/PictureChooser)
+
 <table sytle="border: 0px;">
 <tr>
 <td><img width="200px" src="screenshot1.png" /></td>
@@ -8,7 +10,6 @@ PictureChooser
 <td><img width="200px" src="screenshot3.png" /></td>
 </tr>
 </table>
-
 
 Usage
 -----
