@@ -45,6 +45,12 @@ android {
             debuggable true
         }
     }
+
+    if (System.getenv("TRAVIS")) {
+        lintOptions {
+            ignoreWarnings true
+        }
+    }
 }
 
 dependencies {
