@@ -49,6 +49,7 @@ android {
     if (System.getenv("TRAVIS")) {
         lintOptions {
             ignoreWarnings true
+            abortOnError false
         }
     }
 }
