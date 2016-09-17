@@ -31,7 +31,6 @@ import java.io.IOException;
 
 import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
-import de.j4velin.picturechooser.util.API8Wrapper;
 import de.j4velin.picturechooser.util.ImageLoader;
 
 class SaveTask extends AsyncTask<String, Void, String> {
@@ -158,7 +157,8 @@ class SaveTask extends AsyncTask<String, Void, String> {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             try {
                 path = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO ?
-                        API8Wrapper.getExternalFilesDir(main).getAbsolutePath() + "/image_" :
+                        main.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() +
+                                "/image_" :
                         Environment.getExternalStorageDirectory().getAbsolutePath() +
                                 "/Android/data/" + main.getPackageName() + "/files/image_";
                 do {

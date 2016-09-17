@@ -8,10 +8,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.os.Build;
 import android.support.v4.util.LruCache;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -88,7 +90,7 @@ public class ImageLoader {
 
         options.inJustDecodeBounds = false;
         try {
-            int rotation = Build.VERSION.SDK_INT >= 5 ? API5Wrapper.getOrientation(pfad) : 0;
+            int rotation = getOrientation(pfad);
             if (rotation > 0) {
                 Matrix matrix = new Matrix();
                 matrix.postRotate(rotation);
@@ -170,5 +172,28 @@ public class ImageLoader {
                 photoToLoad.imageView.setImageResource(stub_id);
             }
         }
+    }
+
+    private static int getOrientation(final String imagePath) {
+        int rotate = 0;
+        try {
+            ExifInterface exif = new ExifInterface(new File(imagePath).getAbsolutePath());
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+            switch (orientation) {
+                case ExifInterface.ORIENTATION_ROTATE_270:
+                    rotate = 270;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_180:
+                    rotate = 180;
+                    break;
+                case ExifInterface.ORIENTATION_ROTATE_90:
+                    rotate = 90;
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return rotate;
     }
 }

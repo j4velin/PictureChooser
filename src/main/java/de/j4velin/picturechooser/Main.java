@@ -22,6 +22,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -36,7 +37,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import de.j4velin.picturechooser.crop.CropFragment;
-import de.j4velin.picturechooser.util.API8Wrapper;
 
 public class Main extends FragmentActivity {
 
@@ -176,8 +176,8 @@ public class Main extends FragmentActivity {
                     if (extension == null) extension = "jpg";
                     int pos = 0;
                     do {
-                        f = new File(API8Wrapper.getExternalFilesDir(this).getAbsolutePath(),
-                                imageName + "_" + pos + "." + extension);
+                        f = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                                .getAbsolutePath(), imageName + "_" + pos + "." + extension);
                         pos++;
                     } while (f.exists());
 
