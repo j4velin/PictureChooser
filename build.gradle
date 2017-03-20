@@ -28,8 +28,13 @@ android {
         buildToolsVersion rootProject.ext.buildToolsVersion
     } else {
         logger.warn('compileSdkVersion not found in rootProject')
-        compileSdkVersion 25
-        buildToolsVersion "25"
+        if (System.getenv("TRAVIS")) {
+            compileSdkVersion 24
+            buildToolsVersion "24"
+        } else {
+            compileSdkVersion 25
+            buildToolsVersion "25"
+        }
     }
 
     buildTypes {
