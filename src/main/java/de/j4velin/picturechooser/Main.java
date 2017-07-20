@@ -155,6 +155,7 @@ public class Main extends FragmentActivity {
         if (requestCode == REQUEST_IMAGE) {
             if (resultCode == RESULT_OK) {
                 Uri uri = data.getData();
+                if (Main.DEBUG) Logger.log("onActivityResult data=" + uri);
                 File f = new File(uri.getPath());
                 if (f.exists() && f.canRead()) {
                     // locally available file, not need to copy
