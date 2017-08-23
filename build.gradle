@@ -60,7 +60,7 @@ android {
 
 dependencies {
     // You must install or update the Support Repository through the SDK manager to use this dependency.
-    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:support-v4:26.0.1'
 }
 
 
