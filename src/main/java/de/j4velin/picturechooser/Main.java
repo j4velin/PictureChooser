@@ -153,7 +153,7 @@ public class Main extends FragmentActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
         if (requestCode == REQUEST_IMAGE) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == RESULT_OK && data.getData() != null) {
                 Uri uri = data.getData();
                 if (Main.DEBUG) Logger.log("onActivityResult data=" + uri);
                 File f = new File(uri.getPath());
