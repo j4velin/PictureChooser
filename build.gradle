@@ -22,7 +22,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: "com.jfrog.bintray"
 
-version = "1.0.7"
+version = "1.0.8"
 
 android {
 
@@ -32,7 +32,7 @@ android {
     } else {
         logger.warn('compileSdkVersion not found in rootProject')
         compileSdkVersion 27
-        buildToolsVersion "27.0.1"
+        buildToolsVersion "27.0.3"
     }
 
     buildTypes {
@@ -70,7 +70,7 @@ repositories {
 
 dependencies {
     // You must install or update the Support Repository through the SDK manager to use this dependency.
-    compile 'com.android.support:support-v4:27.0.2'
+    implementation 'com.android.support:support-v4:27.1.1'
 }
 
 
