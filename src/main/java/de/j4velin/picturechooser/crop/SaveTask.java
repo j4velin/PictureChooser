@@ -58,7 +58,7 @@ class SaveTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(final String error) {
         super.onPostExecute(error);
-        pg.dismiss();
+        if (pg.isShowing()) pg.dismiss();
         if (error != null) {
             new AlertDialog.Builder(main).setMessage(error).setTitle(R.string.error)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
