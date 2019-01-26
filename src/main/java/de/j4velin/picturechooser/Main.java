@@ -1,12 +1,12 @@
 /*
  * Copyright 2013 Thomas Hoffmann
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -73,8 +73,8 @@ public class Main extends FragmentActivity {
     private void start() {
         if (Build.VERSION.SDK_INT >= 19) {
             try {
-                startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                        .addCategory(Intent.CATEGORY_OPENABLE).setType("image/*"), REQUEST_IMAGE);
+                startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).setType("image/*"),
+                        REQUEST_IMAGE);
             } catch (ActivityNotFoundException e) {
                 showInternalPictureChooser();
             }
@@ -133,6 +133,7 @@ public class Main extends FragmentActivity {
 
     private void returnResult(final String imgPath) {
         Intent result = new Intent();
+        result.setData(Uri.fromFile(new File((imgPath))));
         result.putExtra(IMAGE_PATH, imgPath);
         setResult(RESULT_OK, result);
         finish();
