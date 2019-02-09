@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import de.j4velin.picturechooser.Logger;
 import de.j4velin.picturechooser.Main;
 import de.j4velin.picturechooser.R;
 import de.j4velin.picturechooser.util.ImageLoader;
@@ -58,7 +59,13 @@ class SaveTask extends AsyncTask<String, Void, String> {
     @Override
     protected void onPostExecute(final String error) {
         super.onPostExecute(error);
-        if (pg.isShowing()) pg.dismiss();
+        if (pg.isShowing()) {
+            try {
+                pg.dismiss();
+            } catch (IllegalArgumentException iae) {
+                // ignore
+            }
+        }
         if (error != null) {
             new AlertDialog.Builder(main).setMessage(error).setTitle(R.string.error)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -88,7 +95,7 @@ class SaveTask extends AsyncTask<String, Void, String> {
         try {
             destination = createNewCroppingFile();
         } catch (IOException e) {
-            e.printStackTrace();
+            if (Main.DEBUG) Logger.log(e);
             return e.getClass().getSimpleName() + ": " + e.getMessage();
         }
         FileOutputStream out = null;
@@ -111,7 +118,7 @@ class SaveTask extends AsyncTask<String, Void, String> {
                     100, out);
             main.cropped(destination);
         } catch (Throwable e) {
-            e.printStackTrace();
+            if (Main.DEBUG) Logger.log(e);
             return e.getClass().getSimpleName() + ": " + e.getMessage();
         } finally {
             try {
@@ -156,11 +163,8 @@ class SaveTask extends AsyncTask<String, Void, String> {
         String path;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             try {
-                path = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.FROYO ?
-                        main.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() +
-                                "/image_" :
-                        Environment.getExternalStorageDirectory().getAbsolutePath() +
-                                "/Android/data/" + main.getPackageName() + "/files/image_";
+                path = main.getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath() +
+                        "/image_";
                 do {
                     test++;
                     tmpFile = new File(path + test + ".jpg");
