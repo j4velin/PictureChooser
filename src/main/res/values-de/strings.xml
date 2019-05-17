@@ -6,4 +6,7 @@
     <string name="saving">Speichere...</string>
     <string name="external_not_available">Externer Speicher nicht verfügbar</string>
     <string name="no_images">Keine Bilder gefunden</string>
+    <string name="permission">Diese Option benötigt Zugriff auf den Geräte-Speicher. Möchtest
+        du diese Zugriffsrechte jetzt gewähren?
+    </string>
 </resources>

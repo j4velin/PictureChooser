@@ -6,4 +6,7 @@
     <string name="saving">Saving...</string>
     <string name="external_not_available">External storage not available</string>
     <string name="no_images">No images found</string>
+    <string name="permission">This feature requires permission to access your device storage. Do you
+        want to grant this permission now?
+    </string>
 </resources>

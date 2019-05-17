@@ -16,13 +16,17 @@
 package de.j4velin.picturechooser;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -55,16 +59,56 @@ public class Main extends FragmentActivity {
     @Override
     protected void onCreate(final Bundle b) {
         super.onCreate(b);
-
         setResult(RESULT_CANCELED);
+        checkPermission(true);
+    }
 
+    private void checkPermission(boolean askForPermission) {
         if (Build.VERSION.SDK_INT >= 23 && PermissionChecker
                 .checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) !=
                 PermissionChecker.PERMISSION_GRANTED && PermissionChecker
                 .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PermissionChecker.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
+            if (askForPermission) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) || ActivityCompat
+                        .shouldShowRequestPermissionRationale(this,
+                                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            REQUEST_STORAGE_PERMISSION);
+                } else {
+                    new AlertDialog.Builder(this).setMessage(R.string.permission)
+                            .setPositiveButton(android.R.string.ok,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface,
+                                                            int i) {
+                                            Intent intent = new Intent(
+                                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getPackageName(),
+                                                    null);
+                                            intent.setData(uri);
+                                            startActivityForResult(intent,
+                                                    REQUEST_STORAGE_PERMISSION);
+                                            dialogInterface.dismiss();
+                                        }
+                                    }).setNegativeButton(android.R.string.cancel,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            finish();
+                        }
+                    }).create().show();
+                }
+            } else {
+                finish();
+            }
         } else {
             start();
         }
@@ -153,7 +197,9 @@ public class Main extends FragmentActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, final Intent data) {
-        if (requestCode == REQUEST_IMAGE) {
+        if (requestCode == REQUEST_STORAGE_PERMISSION) {
+            checkPermission(false);
+        } else if (requestCode == REQUEST_IMAGE) {
             if (resultCode == RESULT_OK && data.getData() != null) {
                 Uri uri = data.getData();
                 if (Main.DEBUG) Logger.log("onActivityResult data=" + uri);
