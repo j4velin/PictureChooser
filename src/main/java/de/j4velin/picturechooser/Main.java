@@ -200,7 +200,7 @@ public class Main extends FragmentActivity {
         if (requestCode == REQUEST_STORAGE_PERMISSION) {
             checkPermission(false);
         } else if (requestCode == REQUEST_IMAGE) {
-            if (resultCode == RESULT_OK && data.getData() != null) {
+            if (resultCode == RESULT_OK && data != null && data.getData() != null) {
                 Uri uri = data.getData();
                 if (Main.DEBUG) Logger.log("onActivityResult data=" + uri);
                 File f = new File(uri.getPath());
