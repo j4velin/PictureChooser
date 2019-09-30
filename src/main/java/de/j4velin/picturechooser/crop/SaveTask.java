@@ -116,6 +116,7 @@ class SaveTask extends AsyncTask<String, Void, String> {
                     (int) (crop.bottom / imgDetails[2]), null, true).compress(
                     original.hasAlpha() ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG,
                     100, out);
+            if (Main.DEBUG) Logger.log("cropped file created at " + destination);
             main.cropped(destination);
         } catch (Throwable e) {
             if (Main.DEBUG) Logger.log(e);
@@ -126,9 +127,12 @@ class SaveTask extends AsyncTask<String, Void, String> {
             } catch (Throwable ignore) {
             }
             try {
-                // try to delete the just created 'original' file
-                // dont delete file for SDK<19 - we didnt make a copy on those versions
-                if (Build.VERSION.SDK_INT >= 19) {
+                if (source.startsWith(main.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+                        .getAbsolutePath()) && Build.VERSION.SDK_INT >= 19) {
+                    // source file is just a temporary created file (downloaded from google photos or thelike)
+                    //  -> try to delete this 'original' file now
+                    // dont delete file for SDK<19 - we didnt make a copy on those versions
+                    if (Main.DEBUG) Logger.log("deleting temporary file " + source);
                     new File(source).delete();
                 }
             } catch (Throwable ignore) {
