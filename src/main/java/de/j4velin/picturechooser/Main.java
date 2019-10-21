@@ -70,42 +70,8 @@ public class Main extends FragmentActivity {
                 .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PermissionChecker.PERMISSION_GRANTED) {
             if (askForPermission) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE) || ActivityCompat
-                        .shouldShowRequestPermissionRationale(this,
-                                Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            REQUEST_STORAGE_PERMISSION);
-                } else {
-                    new AlertDialog.Builder(this).setMessage(R.string.permission)
-                            .setPositiveButton(android.R.string.ok,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface,
-                                                            int i) {
-                                            Intent intent = new Intent(
-                                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                            Uri uri = Uri.fromParts("package", getPackageName(),
-                                                    null);
-                                            intent.setData(uri);
-                                            startActivityForResult(intent,
-                                                    REQUEST_STORAGE_PERMISSION);
-                                            dialogInterface.dismiss();
-                                        }
-                                    }).setNegativeButton(android.R.string.cancel,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.cancel();
-                                }
-                            }).setOnCancelListener(new DialogInterface.OnCancelListener() {
-                        @Override
-                        public void onCancel(DialogInterface dialogInterface) {
-                            finish();
-                        }
-                    }).create().show();
-                }
+                requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_STORAGE_PERMISSION);
             } else {
                 finish();
             }
@@ -190,7 +156,40 @@ public class Main extends FragmentActivity {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 start();
             } else {
-                finish();
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) || ActivityCompat
+                        .shouldShowRequestPermissionRationale(this,
+                                Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    new AlertDialog.Builder(this).setMessage(R.string.permission)
+                            .setPositiveButton(android.R.string.ok,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface,
+                                                            int i) {
+                                            Intent intent = new Intent(
+                                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            Uri uri = Uri.fromParts("package", getPackageName(),
+                                                    null);
+                                            intent.setData(uri);
+                                            startActivityForResult(intent,
+                                                    REQUEST_STORAGE_PERMISSION);
+                                            dialogInterface.dismiss();
+                                        }
+                                    }).setNegativeButton(android.R.string.cancel,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            }).setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            finish();
+                        }
+                    }).create().show();
+                } else {
+                    finish();
+                }
             }
         }
     }
