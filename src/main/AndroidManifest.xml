@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="de.j4velin.picturechooser"
-          android:versionCode="9"
-          android:versionName="1.0.9">
+    android:versionCode="1"
+    android:versionName="1.1">
 
-    <uses-sdk android:targetSdkVersion="27"/>
+    <uses-sdk android:targetSdkVersion="33" />
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:largeHeap="true">
         <activity
             android:name="de.j4velin.picturechooser.Main"
-            android:theme="@style/LibTheme.PictureChooser"/>
+            android:theme="@style/LibTheme.PictureChooser" />
     </application>
 
 </manifest>

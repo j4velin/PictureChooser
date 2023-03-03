@@ -8,10 +8,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
-import android.os.Build;
-import android.support.v4.util.LruCache;
 import android.widget.ImageView;
+
+import androidx.annotation.NonNull;
+import androidx.collection.LruCache;
+import androidx.exifinterface.media.ExifInterface;
 
 import java.io.File;
 import java.util.Collections;
@@ -32,13 +33,12 @@ public class ImageLoader {
     private final LruCache<String, Bitmap> memoryCache =
             new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024) / 8) {
                 @Override
-                protected int sizeOf(final String key, final Bitmap value) {
-                    return Build.VERSION.SDK_INT >= 12 ? API12Wrapper.getByteCount(value) :
-                            value.getRowBytes() * value.getHeight();
+                protected int sizeOf(@NonNull final String key, @NonNull final Bitmap value) {
+                    return value.getByteCount();
                 }
             };
     private final Map<ImageView, String> imageViews =
-            Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+            Collections.synchronizedMap(new WeakHashMap<>());
     public final ExecutorService executorService;
 
     public ImageLoader() {
@@ -144,7 +144,7 @@ public class ImageLoader {
         }
     }
 
-    private class PhotoToLoad {
+    private static class PhotoToLoad {
         private final String pfad;
         private final ImageView imageView;
 
