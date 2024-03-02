@@ -62,7 +62,7 @@ repositories {
 dependencies {
     // You must install or update the Support Repository through the SDK manager to use this dependency.
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.exifinterface:exifinterface:1.3.6'
+    implementation 'androidx.exifinterface:exifinterface:1.3.7'
 }
 
 
@@ -73,7 +73,7 @@ group = "com.github.j4velin.PictureChooser"                    // Maven Group ID
 
 task sourcesJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
+    //classifier = 'sources'
 }
 
 task javadoc(type: Javadoc) {
@@ -83,7 +83,7 @@ task javadoc(type: Javadoc) {
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
+    //classifier = 'javadoc'
     from javadoc.destinationDir
 }
 artifacts {
